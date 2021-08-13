@@ -1,0 +1,157 @@
+:root {
+	--board-width: 400px;
+	--animation-speed: 0.3s;
+}
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+html {
+	font-size: 1rem;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+	color: black;
+	background-color: white;
+	width: auto;
+	height: 100vh;
+	min-height: 100vh;
+}
+main {
+	width: inherit;
+	height: inherit;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	@media (orientation: landscape) {
+		flex-direction: row;
+	}
+
+	label {
+		color: #555;
+		font-size: 1.3rem;
+	}
+	form {
+		margin: 1rem;
+
+		input[type='range'] {
+			cursor: pointer;
+		}
+	}
+
+	#board {
+		--square-size: calc(var(--board-width) / 8);
+		position: relative;
+		width: var(--board-width);
+		height: var(--board-width);
+		background-image: url('/assets/chessboard.gif');
+		background-position: center;
+		background-size: contain;
+		background-repeat: no-repeat;
+		cursor: pointer;
+		flex-shrink: 0;
+
+		.highlight {
+			position: absolute;
+			width: var(--square-size);
+			height: var(--square-size);
+
+			&.selected {
+				background-color: #ebe817a2;
+			}
+
+			&.moves {
+				background-color: #17eb88a2;
+			}
+		}
+
+		& > img {
+			position: absolute;
+			width: var(--square-size);
+			height: var(--square-size);
+			cursor: grab;
+			z-index: 1;
+			transition: inset var(--animation-speed) ease-out;
+		}
+
+		.dialog {
+			position: absolute;
+			width: inherit;
+			height: inherit;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: #808080a6;
+			cursor: default;
+			z-index: 100;
+
+			#promotion_box {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				grid-template-rows: repeat(2, 1fr);
+				background-color: burlywood;
+				border: 3px solid gold;
+				border-radius: 1em;
+				overflow: hidden;
+				box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+
+				img {
+					width: calc(var(--square-size) * 1.3);
+					height: calc(var(--square-size) * 1.3);
+					cursor: pointer;
+					transition: background-color 0.3s ease;
+
+					&:hover {
+						background-color: #e09533;
+					}
+				}
+			}
+
+			#gameover_box {
+				padding: 1em 2em;
+				text-align: center;
+				background-color: azure;
+				border-radius: 1em;
+
+				h1 {
+					color: #333;
+				}
+
+				button {
+					margin: 1.7em 2em 1em;
+					padding: 1em 3em;
+					border: none;
+					border-radius: 0.8em;
+					color: white;
+					font-weight: bold;
+					cursor: pointer;
+
+					&.newGame {
+						background: linear-gradient(hsl(120, 60%, 48%), hsl(120, 60%, 60%));
+
+						&:hover {
+							background: linear-gradient(
+								hsl(120, 70%, 48%),
+								hsl(120, 70%, 60%)
+							);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	button {
+		margin: 1rem;
+		padding: 0.8em 1.8em;
+		border: none;
+		border-radius: 2rem;
+		color: white;
+		background-color: hsl(0, 0%, 60%);
+		font-weight: bold;
+		cursor: pointer;
+	}
+}
