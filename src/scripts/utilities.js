@@ -1,4 +1,68 @@
-const getCoordinatesFromClick = function (x, y, board_size, perspective) {
+import { Piece, Castling } from './classes';
+import {
+	selectPiece,
+	board_element,
+	turn,
+	promotion,
+	promotionName,
+	setPromotionName,
+	board,
+	whiteKing,
+	blackKing,
+	setWhiteKing,
+	setBlackKing,
+	newGame,
+} from './main';
+
+import _white_pawn_ from '../assets/chess_icon_whitePawn.png';
+import _white_knight_ from '../assets/chess_icon_whiteKnight.png';
+import _white_bishop_ from '../assets/chess_icon_whiteBishop.png';
+import _white_rook_ from '../assets/chess_icon_whiteRook.png';
+import _white_queen_ from '../assets/chess_icon_whiteQueen.png';
+import _white_king_ from '../assets/chess_icon_whiteKing.png';
+
+import _black_pawn_ from '../assets/chess_icon_blackPawn.png';
+import _black_knight_ from '../assets/chess_icon_blackKnight.png';
+import _black_bishop_ from '../assets/chess_icon_blackBishop.png';
+import _black_rook_ from '../assets/chess_icon_blackRook.png';
+import _black_queen_ from '../assets/chess_icon_blackQueen.png';
+import _black_king_ from '../assets/chess_icon_blackKing.png';
+
+const getImagePath = function (color, name) {
+	if (color == 'white') {
+		switch (name) {
+			case 'Pawn':
+				return _white_pawn_;
+			case 'Knight':
+				return _white_knight_;
+			case 'Bishop':
+				return _white_bishop_;
+			case 'Rook':
+				return _white_rook_;
+			case 'Queen':
+				return _white_queen_;
+			case 'King':
+				return _white_king_;
+		}
+	} else {
+		switch (name) {
+			case 'Pawn':
+				return _black_pawn_;
+			case 'Knight':
+				return _black_knight_;
+			case 'Bishop':
+				return _black_bishop_;
+			case 'Rook':
+				return _black_rook_;
+			case 'Queen':
+				return _black_queen_;
+			case 'King':
+				return _black_king_;
+		}
+	}
+};
+
+export const getCoordinatesFromClick = function (x, y, board_size, perspective) {
 	let numberOfChessboardColumnsAndRows = 8;
 	let square_size = board_size / numberOfChessboardColumnsAndRows;
 	let x_coord = Math.floor(x / square_size);
@@ -7,7 +71,7 @@ const getCoordinatesFromClick = function (x, y, board_size, perspective) {
 	else x_coord = 7 - x_coord;
 	return [x_coord, y_coord];
 };
-const createNewPiece = function (id, token, rank, file) {
+export const createNewPiece = function (id, token, rank, file) {
 	let piece;
 	switch (token) {
 		case 'P':
@@ -60,17 +124,12 @@ const createNewPiece = function (id, token, rank, file) {
 	}
 	return piece;
 };
-const createPieceUI = function (piece, perspective) {
+export const createPieceUI = function (piece, perspective) {
 	let ui = document.createElement('img');
 	ui.id = piece.id;
-	ui.src = `./assets/chess_icon_${piece.color}${piece.name}.png`;
+	ui.src = getImagePath(piece.color, piece.name);
 	ui.alt = `${piece.color}${piece.name}`;
-	setUILocation(
-		ui,
-		perspective,
-		piece.currentFileLocation,
-		piece.currentRankLocation
-	);
+	setUILocation(ui, perspective, piece.currentFileLocation, piece.currentRankLocation);
 	ui.addEventListener('click', selectPiece);
 	ui.addEventListener('transitionstart', function () {
 		this.style.zIndex = '10';
@@ -91,8 +150,8 @@ const createPieceUI = function (piece, perspective) {
 			},
 			{ once: true }
 		);
-		if (piece.color == 'white') whiteKing = piece;
-		else blackKing = piece;
+		if (piece.color == 'white') setWhiteKing(piece);
+		else setBlackKing(piece);
 	} else if (piece.name == 'Rook') {
 		ui.addEventListener(
 			'transitionend',
@@ -111,7 +170,7 @@ const createPieceUI = function (piece, perspective) {
 	});
 	return ui;
 };
-const setUILocation = function (ui, perspective, file, rank) {
+export const setUILocation = function (ui, perspective, file, rank) {
 	let multiplier = 100 / 8;
 	if (perspective == 'white') {
 		ui.style.left = `${multiplier * file}%`;
@@ -125,7 +184,7 @@ const setUILocation = function (ui, perspective, file, rank) {
 		ui.style.bottom = 'auto';
 	}
 };
-const openGameOverDialog = function (result) {
+export const openGameOverDialog = function (result) {
 	let dialog = document.createElement('div');
 	let html = `
 	<div class="dialog">
@@ -154,22 +213,22 @@ const openPromotionBox = function (color) {
 		<div id="promotion_box">
 			<img
 				name="Queen"
-				src="assets/chess_icon_${color}Queen.png"
+				src=${getImagePath(color, 'Queen')}
 				alt="${color}Queen"
 			/>
 			<img
 				name="Rook"
-				src="assets/chess_icon_${color}Rook.png"
+				src=${getImagePath(color, 'Rook')}
 				alt="${color}Rook"
 			/>
 			<img
 				name="Bishop"
-				src="assets/chess_icon_${color}Bishop.png"
+				src=${getImagePath(color, 'Bishop')}
 				alt="${color}Bishop"
 			/>
 			<img
 				name="Knight"
-				src="assets/chess_icon_${color}Knight.png"
+				src=${getImagePath(color, 'Knight')}
 				alt="${color}Knight"
 			/>
 		</div>`;
@@ -185,10 +244,10 @@ const openPromotionBox = function (color) {
 	board_element.append(dialog);
 };
 const promoteTo = function (name) {
-	promotionName = name;
+	setPromotionName(name);
 	promotion.next();
 };
-const promotePawn = function* (pawn, file, rank, perspective) {
+export const promotePawn = function* (pawn, file, rank, perspective) {
 	yield openPromotionBox(turn);
 	pawn.name = promotionName;
 	pawn.currentFileLocation = file;
@@ -197,7 +256,7 @@ const promotePawn = function* (pawn, file, rank, perspective) {
 	pawn.ui.addEventListener(
 		'transitionend',
 		function () {
-			this.src = `./assets/chess_icon_${pawn.color}${pawn.name}.png`;
+			this.src = getImagePath(pawn.color, pawn.name);
 			this.alt = `${pawn.color}${pawn.name}`;
 		},
 		{ once: true }
@@ -205,21 +264,21 @@ const promotePawn = function* (pawn, file, rank, perspective) {
 	setUILocation(pawn.ui, perspective, file, rank);
 };
 // highlight functions
-const highlightSquare = function (type, perspective, file, rank) {
+export const highlightSquare = function (type, perspective, file, rank) {
 	let highlight = document.createElement('div');
 	highlight.id = `[${file},${rank}]`;
 	highlight.classList.add('highlight', type);
 	document.getElementById('board').append(highlight);
 	setUILocation(highlight, perspective, file, rank);
 };
-const removeAllHighlight = function (type = '') {
+export const removeAllHighlight = function (type = '') {
 	let board = document.getElementById('board');
 	let highlights = [...board.querySelectorAll(`.highlight${type}`)];
-	highlights.forEach((highlight) => {
+	highlights.forEach(highlight => {
 		board.removeChild(highlight);
 	});
 };
-const highlightSquares = function (squares, type, perspective) {
+export const highlightSquares = function (squares, type, perspective) {
 	squares.forEach(([file, rank]) => {
 		highlightSquare(type, perspective, file, rank);
 	});

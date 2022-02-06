@@ -5,11 +5,6 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Chess GUI</title>
-		<link rel="stylesheet" href="Styles/style.css" />
-		<script src="classes.js" defer></script>
-		<script src="rules.js" defer></script>
-		<script src="utilities.js" defer></script>
-		<script src="main.js" defer></script>
 	</head>
 	<body>
 		<main>
@@ -21,13 +16,14 @@
 					type="range"
 					oninput="x.value=this.value"
 					step="0.1"
+					min="0.1"
 					max="1"
 					value="0.3"
 				/>
 				<span><output name="x">0.3</output>s</span>
 			</form>
 			<div id="board"></div>
-			<button type="button" onclick="rotateBoard()">Rotate Board</button>
+			<button id="rotate_board_btn" type="button">Rotate Board</button>
 		</main>
 	</body>
 </html>

@@ -47,7 +47,7 @@ main {
 		position: relative;
 		width: var(--board-width);
 		height: var(--board-width);
-		background-image: url('/assets/chessboard.gif');
+		background-image: url(../assets/chessboard.gif);
 		background-position: center;
 		background-size: contain;
 		background-repeat: no-repeat;
@@ -133,10 +133,7 @@ main {
 						background: linear-gradient(hsl(120, 60%, 48%), hsl(120, 60%, 60%));
 
 						&:hover {
-							background: linear-gradient(
-								hsl(120, 70%, 48%),
-								hsl(120, 70%, 60%)
-							);
+							background: linear-gradient(hsl(120, 70%, 48%), hsl(120, 70%, 60%));
 						}
 					}
 				}

@@ -1,17 +1,32 @@
-var board_element;
+import '../styles/style.scss';
+import { SelectedSquare } from './classes';
+import { getValidMoves, getGameStatus } from './rules';
+import {
+	getCoordinatesFromClick,
+	createNewPiece,
+	createPieceUI,
+	setUILocation,
+	promotePawn,
+	highlightSquare,
+	removeAllHighlight,
+	highlightSquares,
+} from './utilities';
+
+export var board_element = null;
+export var turn = 'white';
+export var promotion = null;
+export var promotionName = null;
+export var enPassant = null;
+export var whiteKing = null;
+export var blackKing = null;
+
 var board_size = 400;
 var perspective = 'white';
-var turn = 'white';
-var enPassant = null;
-var promotion = null;
-var promotionName = null;
-var whiteKing = null,
-	blackKing = null;
 
 const selectedSquare = new SelectedSquare();
 const initialPosition = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
-const pieces = [];
-const board = [
+export const pieces = [];
+export const board = [
 	[null, null, null, null, null, null, null, null],
 	[null, null, null, null, null, null, null, null],
 	[null, null, null, null, null, null, null, null],
@@ -22,9 +37,19 @@ const board = [
 	[null, null, null, null, null, null, null, null],
 ];
 
+export const setWhiteKing = function (value) {
+	whiteKing = value;
+};
+export const setBlackKing = function (value) {
+	blackKing = value;
+};
+export const setPromotionName = function (value) {
+	promotionName = value;
+};
+
 // gameflow
 const setUpBoardInitialPosition = function () {
-	board.forEach((rank) => rank.fill(null));
+	board.forEach(rank => rank.fill(null));
 	pieces.fill(null);
 	board_element.innerHTML = '';
 	let position = initialPosition.split('/');
@@ -51,30 +76,22 @@ const setUpBoardInitialPosition = function () {
 };
 const rotateBoard = function () {
 	perspective = perspective == 'white' ? 'black' : 'white';
-	board.forEach((rank) => {
-		rank.forEach((piece) => {
+	board.forEach(rank => {
+		rank.forEach(piece => {
 			if (piece !== null)
-				setUILocation(
-					piece.ui,
-					perspective,
-					piece.currentFileLocation,
-					piece.currentRankLocation
-				);
+				setUILocation(piece.ui, perspective, piece.currentFileLocation, piece.currentRankLocation);
 		});
 	});
 	let highlights = [...document.getElementsByClassName('highlight')];
-	highlights.forEach((highlight) => {
+	highlights.forEach(highlight => {
 		let [file, rank] = eval(highlight.id);
 		setUILocation(highlight, perspective, file, rank);
 	});
 };
 const setAnimationSpeed = function () {
-	document.documentElement.style.setProperty(
-		'--animation-speed',
-		`${this.value}s`
-	);
+	document.documentElement.style.setProperty('--animation-speed', `${this.value}s`);
 };
-const newGame = function () {
+export const newGame = function () {
 	perspective = 'white';
 	turn = 'white';
 	enPassant = null;
@@ -84,19 +101,15 @@ const newGame = function () {
 	blackKing = null;
 	setUpBoardInitialPosition();
 };
-const selectPiece = function (e) {
+export const selectPiece = function (e) {
 	let piece = pieces[Number(e.target.id)];
 	if (!piece) throw 'piece is null at selectPiece function';
 	if (piece.color == turn) {
 		let [file, rank] = selectedSquare.base || [null, null];
 		removeAllHighlight();
-		if (file !== null && rank !== null && board[rank][file] === piece)
-			selectedSquare.base = null;
+		if (file !== null && rank !== null && board[rank][file] === piece) selectedSquare.base = null;
 		else {
-			selectedSquare.base = [
-				piece.currentFileLocation,
-				piece.currentRankLocation,
-			];
+			selectedSquare.base = [piece.currentFileLocation, piece.currentRankLocation];
 			highlightSquare('selected', perspective, ...selectedSquare.base);
 			// temp
 			// if (piece) {
@@ -119,10 +132,7 @@ const selectPiece = function (e) {
 				return;
 			}
 
-			selectedSquare.target = [
-				piece.currentFileLocation,
-				piece.currentRankLocation,
-			];
+			selectedSquare.target = [piece.currentFileLocation, piece.currentRankLocation];
 			removeAllHighlight();
 			highlightSquare('selected', perspective, ...selectedSquare.target);
 			let { base, target } = selectedSquare;
@@ -169,8 +179,7 @@ const removePieceFromSquare = function (piece, file, rank) {
 	if (piece) {
 		board[rank][file] = null;
 		board_element.removeChild(piece.ui);
-	} else
-		throw 'Piece UI is null or undefined at removePieceFromSquare function';
+	} else throw 'Piece UI is null or undefined at removePieceFromSquare function';
 };
 const movePieceFromToSquare = function (baseFile, baseRank, desFile, desRank) {
 	let piece = board[baseRank][baseFile];
@@ -179,12 +188,7 @@ const movePieceFromToSquare = function (baseFile, baseRank, desFile, desRank) {
 		putPieceToSquare(piece, desFile, desRank);
 	}
 };
-const capturePieceFromToSquare = function (
-	baseFile,
-	baseRank,
-	desFile,
-	desRank
-) {
+const capturePieceFromToSquare = function (baseFile, baseRank, desFile, desRank) {
 	let basePiece = board[baseRank][baseFile];
 	let targetPiece = board[desRank][desFile];
 	basePiece.ui.addEventListener(
@@ -230,10 +234,7 @@ const castle = function (baseFile, baseRank, targetFile, targetRank) {
 //////////////////////
 const setBoardSize = function (size) {
 	board_size = size;
-	document.documentElement.style.setProperty(
-		'--board-width',
-		`${board_size}px`
-	);
+	document.documentElement.style.setProperty('--board-width', `${board_size}px`);
 };
 const resizeBoard = function () {
 	let screenWidth = window.innerWidth;
@@ -246,6 +247,7 @@ window.onresize = resizeBoard;
 document.addEventListener('DOMContentLoaded', function () {
 	resizeBoard();
 	let animation_speed = document.getElementById('animation_speed');
+	let rotate_board_btn = document.getElementById('rotate_board_btn');
 	board_element = document.getElementById('board');
 	animation_speed.addEventListener('input', setAnimationSpeed);
 	board_element.addEventListener('click', function (e) {
@@ -254,12 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (e.target.classList.contains('highlight')) {
 			coords = eval(e.target.id);
 		} else {
-			coords = getCoordinatesFromClick(
-				e.offsetX,
-				e.offsetY,
-				board_size,
-				perspective
-			);
+			coords = getCoordinatesFromClick(e.offsetX, e.offsetY, board_size, perspective);
 		}
 		if (selectedSquare.base == null) return;
 		let [baseFile, baseRank] = selectedSquare.base;
@@ -279,11 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			highlightSquare('selected', perspective, ...coords);
 			let { base, target } = selectedSquare;
 			if (selectedSquare.isPassantCapture) {
-				capturePassantPiece(
-					base,
-					enPassant.destinationSquare,
-					enPassant.passantSquare
-				);
+				capturePassantPiece(base, enPassant.destinationSquare, enPassant.passantSquare);
 			} else if (selectedSquare.isCastling) {
 				castle(...base, ...target);
 			} else {
@@ -293,6 +286,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			switchTurn();
 			getGameStatus();
 		}
+	});
+	rotate_board_btn.addEventListener('click', () => {
+		rotateBoard();
 	});
 	newGame();
 	getGameStatus();

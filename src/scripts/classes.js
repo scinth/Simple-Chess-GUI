@@ -1,4 +1,7 @@
-class Piece {
+import { isKingInCheck } from './rules';
+import { turn, enPassant, board } from './main';
+
+export class Piece {
 	constructor(id, name, color, file, rank) {
 		this.id = id;
 		this.name = name;
@@ -10,7 +13,7 @@ class Piece {
 	}
 }
 
-class SelectedSquare {
+export class SelectedSquare {
 	constructor() {
 		this.base = null;
 		this.target = null;
@@ -37,12 +40,7 @@ class SelectedSquare {
 		let [baseFile, baseRank] = this.base;
 		let [targetFile, targetRank] = this.target;
 		if (baseFile == 4 && (targetFile == 6 || targetFile == 2)) {
-			if (
-				(baseRank == 0 && targetRank == 0) ||
-				baseRank == 7 ||
-				targetRank == 7
-			)
-				return true;
+			if ((baseRank == 0 && targetRank == 0) || baseRank == 7 || targetRank == 7) return true;
 			else return false;
 		} else return false;
 	}
@@ -51,7 +49,7 @@ class SelectedSquare {
 		this.target = null;
 	}
 }
-class Castling {
+export class Castling {
 	constructor(color) {
 		this.isKingNotMovedYet = true;
 		this.isARookNotMovedYet = true;

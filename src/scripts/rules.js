@@ -1,3 +1,6 @@
+import { turn, enPassant, pieces, board, whiteKing, blackKing } from './main';
+import { openGameOverDialog } from './utilities';
+
 const mockMove = {
 	mocks: [],
 };
@@ -27,7 +30,7 @@ mockMove.transferPiece = function (from, to) {
 	board[targetRank][targetFile] = piece;
 };
 mockMove.resetMocks = function () {
-	this.mocks.forEach((mock) => {
+	this.mocks.forEach(mock => {
 		let piece = pieces[Number(mock.id)];
 		let baseFile = piece.currentFileLocation;
 		let baseRank = piece.currentRankLocation;
@@ -52,8 +55,7 @@ const isSquareControlled = function (squares, name, color) {
 		if (piece !== null && piece.color != color) {
 			if (
 				(typeof name == 'string' && piece.name == name) ||
-				(typeof name == 'object' &&
-					(piece.name == name[0] || piece.name == name[1]))
+				(typeof name == 'object' && (piece.name == name[0] || piece.name == name[1]))
 			)
 				return true;
 		}
@@ -87,7 +89,7 @@ const isSquareControlledByKing = function (file, rank, color) {
 	let isControlled = isSquareControlled(squares, 'King', color);
 	return isControlled;
 };
-const isKingInCheck = function (file, rank, color) {
+export const isKingInCheck = function (file, rank, color) {
 	if (
 		isSquareControlledByPawn(file, rank, color) ||
 		isSquareControlledByKnight(file, rank, color) ||
@@ -98,7 +100,7 @@ const isKingInCheck = function (file, rank, color) {
 		return true;
 	return false;
 };
-const getValidMoves = function (piece) {
+export const getValidMoves = function (piece) {
 	let moves;
 	let file = piece.currentFileLocation;
 	let rank = piece.currentRankLocation;
@@ -161,20 +163,16 @@ const getValidMoves = function (piece) {
 };
 const hasMovesLeft = function (color) {
 	let piecesInTurn = [];
-	board.forEach((row) => {
-		row.forEach((piece) => {
+	board.forEach(row => {
+		row.forEach(piece => {
 			if (piece !== null && piece.color == color) piecesInTurn.push(piece);
 		});
 	});
-	return piecesInTurn.some((piece) => getValidMoves(piece).length > 0);
+	return piecesInTurn.some(piece => getValidMoves(piece).length > 0);
 };
-const getGameStatus = function () {
+export const getGameStatus = function () {
 	let king = turn == 'white' ? whiteKing : blackKing;
-	let kingIsCheck = isKingInCheck(
-		king.currentFileLocation,
-		king.currentRankLocation,
-		turn
-	);
+	let kingIsCheck = isKingInCheck(king.currentFileLocation, king.currentRankLocation, turn);
 	let playerNoMoves = !hasMovesLeft(turn);
 	if (playerNoMoves) {
 		if (kingIsCheck) {
@@ -225,15 +223,12 @@ const getPawnSquares = function (path, file, rank, color, passant) {
 		let target_rank = rank + rank_map;
 		if (isValidSquare(target_file, target_rank)) {
 			if (index == 0) {
-				if (board[target_rank][target_file] == null)
-					moves.push([target_file, target_rank]);
+				if (board[target_rank][target_file] == null) moves.push([target_file, target_rank]);
 			} else if (board[target_rank][target_file] !== null) {
-				if (board[target_rank][target_file].color != color)
-					moves.push([target_file, target_rank]);
+				if (board[target_rank][target_file].color != color) moves.push([target_file, target_rank]);
 			} else if (enPassant !== null) {
 				let [file, rank] = enPassant.passantSquare;
-				if (target_file == file && target_rank == rank)
-					moves.push(enPassant.passantSquare);
+				if (target_file == file && target_rank == rank) moves.push(enPassant.passantSquare);
 			}
 		}
 	});
@@ -279,13 +274,7 @@ const getKingSquares = function (file, rank, color, castling) {
 				moves.push([target_file, target_rank]);
 			} else if (castling !== null) {
 				let king = color == 'white' ? whiteKing : blackKing;
-				if (
-					!isKingInCheck(
-						king.currentFileLocation,
-						king.currentRankLocation,
-						color
-					)
-				) {
+				if (!isKingInCheck(king.currentFileLocation, king.currentRankLocation, color)) {
 					if (castling.canCastleKingside) moves.push(castling.kingsideSquare);
 					if (castling.canCastleQueenside) moves.push(castling.queensideSquare);
 				}
@@ -302,11 +291,9 @@ const getLongRangeSquares = function (directional_path, file, rank, color) {
 		let target_file = file + file_map;
 		let target_rank = rank + rank_map;
 		while (isValidSquare(target_file, target_rank)) {
-			if (board[target_rank][target_file] == null)
-				moves.push([target_file, target_rank]);
+			if (board[target_rank][target_file] == null) moves.push([target_file, target_rank]);
 			else {
-				if (board[target_rank][target_file].color != color)
-					moves.push([target_file, target_rank]);
+				if (board[target_rank][target_file].color != color) moves.push([target_file, target_rank]);
 				break;
 			}
 			target_file += file_map;
