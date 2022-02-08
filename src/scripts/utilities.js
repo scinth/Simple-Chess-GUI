@@ -14,19 +14,19 @@ import {
 	newGame,
 } from './main';
 
-import _white_pawn_ from '../assets/chess_icon_whitePawn.png';
-import _white_knight_ from '../assets/chess_icon_whiteKnight.png';
-import _white_bishop_ from '../assets/chess_icon_whiteBishop.png';
-import _white_rook_ from '../assets/chess_icon_whiteRook.png';
-import _white_queen_ from '../assets/chess_icon_whiteQueen.png';
-import _white_king_ from '../assets/chess_icon_whiteKing.png';
+import _white_pawn_ from '../assets/whitepawn.png';
+import _white_knight_ from '../assets/whiteknight.png';
+import _white_bishop_ from '../assets/whitebishop.png';
+import _white_rook_ from '../assets/whiterook.png';
+import _white_queen_ from '../assets/whitequeen.png';
+import _white_king_ from '../assets/whiteking.png';
 
-import _black_pawn_ from '../assets/chess_icon_blackPawn.png';
-import _black_knight_ from '../assets/chess_icon_blackKnight.png';
-import _black_bishop_ from '../assets/chess_icon_blackBishop.png';
-import _black_rook_ from '../assets/chess_icon_blackRook.png';
-import _black_queen_ from '../assets/chess_icon_blackQueen.png';
-import _black_king_ from '../assets/chess_icon_blackKing.png';
+import _black_pawn_ from '../assets/blackpawn.png';
+import _black_knight_ from '../assets/blackknight.png';
+import _black_bishop_ from '../assets/blackbishop.png';
+import _black_rook_ from '../assets/blackrook.png';
+import _black_queen_ from '../assets/blackqueen.png';
+import _black_king_ from '../assets/blackking.png';
 
 const getImagePath = function (color, name) {
 	if (color == 'white') {
