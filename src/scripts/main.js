@@ -111,11 +111,6 @@ export const selectPiece = function (e) {
 		else {
 			selectedSquare.base = [piece.currentFileLocation, piece.currentRankLocation];
 			highlightSquare('selected', perspective, ...selectedSquare.base);
-			// temp
-			// if (piece) {
-			// 	let moves = getValidMoves(piece);
-			// 	highlightSquares(moves, 'moves', perspective);
-			// }
 		}
 	} else {
 		if (selectedSquare.base) {
@@ -138,7 +133,7 @@ export const selectPiece = function (e) {
 			let { base, target } = selectedSquare;
 			capturePieceFromToSquare(...base, ...target);
 			getGameStatus();
-		} else console.log(`${turn}'s turn`);
+		} // else notify who's turn
 	}
 	e.stopPropagation();
 };
@@ -196,7 +191,7 @@ const capturePieceFromToSquare = function (baseFile, baseRank, desFile, desRank)
 		function () {
 			board_element.removeChild(targetPiece.ui);
 		},
-		{ once: true }
+		{ once: true },
 	);
 	board[baseRank][baseFile] = null;
 	putPieceToSquare(basePiece, desFile, desRank);
@@ -214,7 +209,7 @@ const capturePassantPiece = function (base, target, passant) {
 			let target_piece = board[targetRank][targetFile];
 			removePieceFromSquare(target_piece, targetFile, targetRank);
 		},
-		{ once: true }
+		{ once: true },
 	);
 	movePieceFromToSquare(baseFile, baseRank, passantFile, passantRank);
 };

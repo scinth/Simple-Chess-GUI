@@ -6,7 +6,6 @@ const mockMove = {
 };
 mockMove.removePiece = function (file, rank) {
 	let pieceID = board[rank][file].id;
-	// let piece = pieces[Number(pieceID)];
 	this.mocks.unshift({
 		id: pieceID,
 		target: null,
@@ -128,7 +127,6 @@ export const getValidMoves = function (piece) {
 		case 'King':
 			moves = getKingSquares(file, rank, color, piece.castling || null);
 			break;
-		// todo: add other moves here...
 		default:
 			moves = [];
 	}
@@ -136,8 +134,7 @@ export const getValidMoves = function (piece) {
 	let validMoves = [];
 	moves.forEach(([file, rank]) => {
 		let valid = true;
-		mockMove.transferPiece(baseSquare, [file, rank]); // normal moves
-		// special move: passant capture
+		mockMove.transferPiece(baseSquare, [file, rank]);
 		if (piece.name == 'Pawn' && enPassant !== null) {
 			let [passantFile, passantRank] = enPassant.passantSquare;
 			if (file == passantFile && rank == passantRank) {
@@ -179,7 +176,7 @@ export const getGameStatus = function () {
 			let color = turn == 'white' ? 'Black' : 'White';
 			openGameOverDialog(`${color} wins by Checkmate!`);
 		} else openGameOverDialog('Draw by Stalemate');
-	} else if (kingIsCheck) console.log('Check!');
+	} // else if king is in check, notify user
 };
 ///////
 // short range pieces

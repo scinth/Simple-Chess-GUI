@@ -95,7 +95,6 @@ export const createNewPiece = function (id, token, rank, file) {
 			break;
 		case 'K':
 			piece = new Piece(id, 'King', 'white', file, rank);
-			// temporary
 			if (file == 4 && rank == 0) piece.castling = new Castling('white');
 			break;
 		case 'p':
@@ -119,7 +118,6 @@ export const createNewPiece = function (id, token, rank, file) {
 			break;
 		case 'k':
 			piece = new Piece(id, 'King', 'black', file, rank);
-			// temporary
 			if (file == 4 && rank == 7) piece.castling = new Castling('black');
 	}
 	return piece;
@@ -140,7 +138,7 @@ export const createPieceUI = function (piece, perspective) {
 			function () {
 				delete piece.enPassant;
 			},
-			{ once: true }
+			{ once: true },
 		);
 	} else if (piece.name == 'King') {
 		ui.addEventListener(
@@ -148,7 +146,7 @@ export const createPieceUI = function (piece, perspective) {
 			function () {
 				delete piece.castling;
 			},
-			{ once: true }
+			{ once: true },
 		);
 		if (piece.color == 'white') setWhiteKing(piece);
 		else setBlackKing(piece);
@@ -162,7 +160,7 @@ export const createPieceUI = function (piece, perspective) {
 				else if (piece.initialFileLocation == 7 && king.castling)
 					king.castling.isHRookNotMovedYet = false;
 			},
-			{ once: true }
+			{ once: true },
 		);
 	}
 	ui.addEventListener('transitionend', function () {
@@ -259,7 +257,7 @@ export const promotePawn = function* (pawn, file, rank, perspective) {
 			this.src = getImagePath(pawn.color, pawn.name);
 			this.alt = `${pawn.color}${pawn.name}`;
 		},
-		{ once: true }
+		{ once: true },
 	);
 	setUILocation(pawn.ui, perspective, file, rank);
 };

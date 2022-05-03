@@ -76,7 +76,7 @@ export class Castling {
 		} else return false;
 	}
 	get canCastleQueenside() {
-		// todo: fix uncastling on b file threat
+		// TODO : fix uncastling on b file threat
 		if (this.isKingNotMovedYet && this.isARookNotMovedYet) {
 			let rank = this.kingsideSquare[1];
 			let squares = [
@@ -93,7 +93,6 @@ export class Castling {
 						result = board[rank][file] === null && result;
 				}
 				return result;
-				// return board[rank][file] === null && !isKingInCheck(file, rank, turn);
 			});
 			return isValid;
 		} else return false;
