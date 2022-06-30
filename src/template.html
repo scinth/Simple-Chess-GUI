@@ -5,21 +5,18 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="title" content="Chess GUI" />
-		<meta name="description" content="A simple fully-functional chess interface with animations" />
+		<meta name="description" content="A fully-functional chess interface with animations" />
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://nielbrioneschessgui.netlify.app/" />
 		<meta property="og:title" content="Chess GUI" />
-		<meta
-			property="og:description"
-			content="A simple fully-functional chess interface with animations"
-		/>
+		<meta property="og:description" content="A fully-functional chess interface with animations" />
 		<meta property="og:image" content="./chessgui.png" />
 		<meta property="twitter:card" content="summary_large_image" />
 		<meta property="twitter:url" content="https://nielbrioneschessgui.netlify.app/" />
 		<meta property="twitter:title" content="Chess GUI" />
 		<meta
 			property="twitter:description"
-			content="A simple fully-functional chess interface with animations"
+			content="A fully-functional chess interface with animations"
 		/>
 		<meta property="twitter:image" content="./chessgui.png" />
 		<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
@@ -28,23 +25,59 @@
 		<title>Chess GUI</title>
 	</head>
 	<body>
+		<nav role="navigation">
+			<button id="menu_btn">Menu</button>
+			<div id="menu">
+				<ul>
+					<li><a href="#">Load pgn file</a></li>
+					<li><a href="#">Load fen file</a></li>
+				</ul>
+			</div>
+			<div id="settings">
+				<ul>
+					<li>
+						<form action="none">
+							<label for="animation_speed"
+								>Animation Speed<span class="value"><output name="x">0.3</output>s</span></label
+							><br />
+							<input
+								id="animation_speed"
+								name="animation_speed"
+								type="range"
+								oninput="x.value=this.value"
+								step="0.1"
+								min="0.1"
+								max="1"
+								value="0.3"
+							/>
+						</form>
+					</li>
+				</ul>
+			</div>
+			<button id="settings_btn">Settings</button>
+		</nav>
 		<main>
-			<form action="none">
-				<label for="animation_speed">Animation Speed</label><br />
-				<input
-					id="animation_speed"
-					name="animation_speed"
-					type="range"
-					oninput="x.value=this.value"
-					step="0.1"
-					min="0.1"
-					max="1"
-					value="0.3"
-				/>
-				<span><output name="x">0.3</output>s</span>
-			</form>
 			<div id="board"></div>
-			<button id="rotate_board_btn" type="button">Rotate Board</button>
+			<button id="rotate_board_btn" type="button" title="rotate_board_btn"></button>
+			<div id="controls">
+				<div class="movetext">
+					<h3>Movetext</h3>
+					<hr />
+					<p>
+						<br />
+						<span>1.e4&nbsp;</span>
+						<span>d4&nbsp;</span>
+						<span>2.Nf3&nbsp;</span>
+						<span>Nc6&nbsp;</span>
+					</p>
+				</div>
+				<div class="actions">
+					<div class="buttons">
+						<button id="download_pgn" type="" button>Download PGN</button>
+						<button id="download_fen" type="" button>Downlaod FEN</button>
+					</div>
+				</div>
+			</div>
 		</main>
 	</body>
 </html>

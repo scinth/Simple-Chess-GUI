@@ -1,5 +1,5 @@
 :root {
-	--board-width: 400px;
+	--board-width: 0;
 	--animation-speed: 0.3s;
 }
 * {
@@ -13,33 +13,125 @@ html {
 }
 body {
 	color: black;
-	background-color: white;
-	width: auto;
-	height: 100vh;
+	background: linear-gradient(to bottom right, #585858, #706d6d);
+	width: 100%;
+	max-width: 100%;
 	min-height: 100vh;
 }
+nav {
+	width: 100%;
+	max-width: 100%;
+	background-color: #4d4d4d;
+	position: -webkit-sticky;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	display: flex;
+	justify-content: flex-start;
+	align-content: center;
+
+	button {
+		font-size: 1.2em;
+		font-weight: bold;
+		padding: 1em 1.5em;
+		color: white;
+		background: none;
+		border: none;
+	}
+
+	#menu {
+		width: -webkit-fill-available;
+		ul {
+			list-style-type: none;
+			display: inline-block;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			background-color: #4d4d4d;
+			transform: translateX(-100%);
+
+			li a {
+				width: 100%;
+				font-size: 1.2em;
+				font-weight: bold;
+				text-decoration: none;
+				display: inline-block;
+				padding: 1em 1.5em;
+				color: white;
+			}
+		}
+		&.active {
+			ul {
+				transition: transform 0.3s ease-out;
+				transform: translateX(0);
+			}
+		}
+	}
+
+	#settings {
+		ul {
+			list-style-type: none;
+			width: clamp(230px, 30vw, 300px);
+			color: white;
+			background-color: #4d4d4d;
+			padding: 1em 1.5em;
+			position: absolute;
+			top: 100%;
+			right: 0;
+			visibility: hidden;
+
+			label {
+				display: block;
+				width: 100%;
+
+				.value {
+					float: right;
+					font-weight: bold;
+				}
+			}
+
+			input {
+				width: 100%;
+			}
+		}
+
+		&.active {
+			ul {
+				visibility: visible;
+			}
+		}
+	}
+
+	button,
+	ul li a {
+		cursor: pointer;
+		&:focus,
+		&:hover {
+			background-color: #17eb88a2;
+		}
+	}
+}
 main {
-	width: inherit;
-	height: inherit;
+	width: 100%;
+	max-width: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 
-	@media (orientation: landscape) {
-		flex-direction: row;
+	> div {
+		margin: 2rem 0;
 	}
 
-	label {
-		color: #555;
-		font-size: 1.3rem;
-	}
-	form {
-		margin: 1rem;
-
-		input[type='range'] {
-			cursor: pointer;
-		}
+	#rotate_board_btn {
+		--size: 3rem;
+		align-self: center;
+		width: var(--size);
+		height: var(--size);
+		background-color: #17eb88a2;
+		border-width: 0;
+		border-radius: 50%;
+		cursor: pointer;
 	}
 
 	#board {
@@ -53,6 +145,7 @@ main {
 		background-repeat: no-repeat;
 		cursor: pointer;
 		flex-shrink: 0;
+		box-shadow: 0 0 15px 10px rgba(0, 0, 0, 0.2);
 
 		.highlight {
 			position: absolute;
@@ -141,14 +234,89 @@ main {
 		}
 	}
 
-	button {
-		margin: 1rem;
-		padding: 0.8em 1.8em;
-		border: none;
-		border-radius: 2rem;
-		color: white;
-		background-color: hsl(0, 0%, 60%);
-		font-weight: bold;
-		cursor: pointer;
+	#controls {
+		text-align: center;
+		width: 100%;
+
+		.movetext {
+			font-weight: bold;
+			text-align: left;
+			min-height: 380px;
+			padding: 1em 1.5em;
+			color: #555;
+			background-color: white;
+			border-style: inset;
+			border-radius: 7px;
+		}
+
+		.actions {
+			form {
+				margin: 1rem;
+
+				label {
+					color: #555;
+					font-size: 1.3rem;
+				}
+
+				input[type='range'] {
+					cursor: pointer;
+				}
+			}
+
+			.buttons {
+				display: flex;
+				justify-content: space-evenly;
+				align-content: center;
+
+				button {
+					width: clamp(110px, 40%, 150px);
+					margin: 1rem 0;
+					padding: 0.8em 1.8em;
+					border: none;
+					border-radius: 2rem;
+					color: white;
+					background-color: hsl(0, 0%, 60%);
+					font-weight: bold;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+}
+
+@media (orientation: landscape) {
+	nav {
+		#menu_btn {
+			display: none;
+		}
+		#menu {
+			ul {
+				position: static;
+				transition: none;
+				transform: translateX(0);
+
+				li {
+					display: inline-block;
+				}
+			}
+		}
+	}
+	main {
+		height: -webkit-fill-available;
+		min-height: -webkit-fill-available;
+		flex-direction: row;
+		align-items: initial;
+
+		> div {
+			margin-top: 5rem;
+		}
+
+		#rotate_board_btn {
+			margin: 1rem;
+		}
+
+		#controls {
+			width: clamp(100px, 30vw, 500px);
+		}
 	}
 }

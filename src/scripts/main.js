@@ -241,10 +241,27 @@ const resizeBoard = function () {
 window.onresize = resizeBoard;
 document.addEventListener('DOMContentLoaded', function () {
 	resizeBoard();
+	let menu = document.getElementById('menu');
+	let menu_btn = document.getElementById('menu_btn');
+	let settings = document.getElementById('settings');
+	let settings_btn = document.getElementById('settings_btn');
+	let main = document.getElementsByTagName('main')[0];
 	let animation_speed = document.getElementById('animation_speed');
 	let rotate_board_btn = document.getElementById('rotate_board_btn');
 	board_element = document.getElementById('board');
 	animation_speed.addEventListener('input', setAnimationSpeed);
+	menu_btn.addEventListener('click', () => {
+		menu.classList.toggle('active');
+		settings.classList.remove('active');
+	});
+	settings_btn.addEventListener('click', () => {
+		settings.classList.toggle('active');
+		menu.classList.remove('active');
+	});
+	main.addEventListener('click', () => {
+		menu.classList.remove('active');
+		settings.classList.remove('active');
+	});
 	board_element.addEventListener('click', function (e) {
 		let coords;
 		removeAllHighlight('.moves');
