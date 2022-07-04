@@ -1,6 +1,6 @@
 import '../styles/style.scss';
 import { SelectedSquare } from './classes';
-import { getValidMoves, getGameStatus } from './rules';
+import { getValidMoves, getGameStatus, getKnightSquares, getRookSquares } from './rules';
 import {
 	getCoordinatesFromClick,
 	createNewPiece,
@@ -10,6 +10,7 @@ import {
 	highlightSquare,
 	removeAllHighlight,
 	highlightSquares,
+	generateGameNotation,
 } from './utilities';
 
 export var board_element = null;
@@ -19,11 +20,15 @@ export var promotionName = null;
 export var enPassant = null;
 export var whiteKing = null;
 export var blackKing = null;
+export var whiteKnightsIntersection = null;
+export var blackKnightsIntersection = null;
+export var whiteRooksIntersection = null;
+export var blackRooksIntersection = null;
 
 var board_size = 400;
 var perspective = 'white';
 
-const selectedSquare = new SelectedSquare();
+export const selectedSquare = new SelectedSquare();
 const initialPosition = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 export const pieces = [];
 export const board = [
@@ -73,6 +78,161 @@ const setUpBoardInitialPosition = function () {
 			} else tfile += Number(token);
 		}
 	}
+
+	let getWhiteKnightsIntersection = (() => {
+		const b_knight = board[0][1];
+		const g_knight = board[0][6];
+		return movedKnight => {
+			if (!(b_knight && g_knight)) return { isIntersecting: false };
+			let b_squares = getKnightSquares(
+				b_knight.currentFileLocation,
+				b_knight.currentRankLocation,
+				'black',
+			);
+			let g_squares = getKnightSquares(
+				g_knight.currentFileLocation,
+				g_knight.currentRankLocation,
+				'black',
+			);
+			let isIntersecting = false;
+			if (movedKnight === g_knight) {
+				isIntersecting = b_squares.some(b_square => {
+					return (
+						b_square[0] == g_knight.currentFileLocation &&
+						b_square[1] == g_knight.currentRankLocation
+					);
+				});
+			} else {
+				isIntersecting = g_squares.some(g_square => {
+					return (
+						g_square[0] == b_knight.currentFileLocation &&
+						g_square[1] == b_knight.currentRankLocation
+					);
+				});
+			}
+
+			if (isIntersecting) {
+				return {
+					isIntersecting,
+					intersectionFile:
+						movedKnight === b_knight ? g_knight.currentFileLocation : b_knight.currentFileLocation,
+				};
+			}
+			return {
+				isIntersecting,
+			};
+		};
+	})();
+	let getBlackKnightsIntersection = (() => {
+		const b_knight = board[7][1];
+		const g_knight = board[7][6];
+		return movedKnight => {
+			if (!(b_knight && g_knight)) return { isIntersecting: false };
+			let b_squares = getKnightSquares(
+				b_knight.currentFileLocation,
+				b_knight.currentRankLocation,
+				'white',
+			);
+			let g_squares = getKnightSquares(
+				g_knight.currentFileLocation,
+				g_knight.currentRankLocation,
+				'white',
+			);
+			let isIntersecting = false;
+			if (movedKnight === g_knight) {
+				isIntersecting = b_squares.some(b_square => {
+					return (
+						b_square[0] == g_knight.currentFileLocation &&
+						b_square[1] == g_knight.currentRankLocation
+					);
+				});
+			} else {
+				isIntersecting = g_squares.some(g_square => {
+					return (
+						g_square[0] == b_knight.currentFileLocation &&
+						g_square[1] == b_knight.currentRankLocation
+					);
+				});
+			}
+
+			if (isIntersecting) {
+				return {
+					isIntersecting,
+					intersectionFile:
+						movedKnight === b_knight ? g_knight.currentFileLocation : b_knight.currentFileLocation,
+				};
+			}
+			return {
+				isIntersecting,
+			};
+		};
+	})();
+	let getWhiteRooksIntersection = (() => {
+		const a_rook = board[0][0];
+		const h_rook = board[0][7];
+		return (movedPiece, base, target) => {
+			let [baseFile, baseRank] = base;
+			let [targetFile, targetRank] = target;
+			if (!(a_rook && h_rook)) return { isIntersecting: false };
+			let otherPiece = movedPiece === a_rook ? h_rook : a_rook;
+			let squares = getRookSquares(
+				otherPiece.currentFileLocation,
+				otherPiece.currentRankLocation,
+				'black',
+			);
+			for (let i = 0; i < squares.length; i++) {
+				let [file, rank] = squares[i];
+				if (file == baseFile && rank == baseRank)
+					return {
+						isIntersecting: false,
+					};
+				if (file == targetFile && rank == targetRank)
+					return {
+						isIntersecting: true,
+						intersectionFile: otherPiece.currentFileLocation,
+					};
+			}
+			return {
+				isIntersecting: false,
+			};
+		};
+	})();
+	let getBlackRooksIntersection = (() => {
+		const a_rook = board[7][0];
+		const h_rook = board[7][7];
+		return (movedPiece, base, target) => {
+			let [baseFile, baseRank] = base;
+			let [targetFile, targetRank] = target;
+			if (!(a_rook && h_rook)) return { isIntersecting: false };
+			let otherPiece = movedPiece === a_rook ? h_rook : a_rook;
+			let squares = getRookSquares(
+				otherPiece.currentFileLocation,
+				otherPiece.currentRankLocation,
+				'white',
+			);
+			for (let i = 0; i < squares.length; i++) {
+				let [file, rank] = squares[i];
+				if (file == baseFile && rank == baseRank)
+					return {
+						isIntersecting: false,
+					};
+				if (file == targetFile && rank == targetRank)
+					return {
+						isIntersecting: true,
+						intersectionFile: otherPiece.currentFileLocation,
+					};
+			}
+			return {
+				isIntersecting: false,
+			};
+		};
+	})();
+	return [
+		getWhiteKnightsIntersection,
+		getBlackKnightsIntersection,
+		getWhiteRooksIntersection,
+		getBlackRooksIntersection,
+	];
 };
 const rotateBoard = function () {
 	perspective = perspective == 'white' ? 'black' : 'white';
@@ -99,11 +259,20 @@ export const newGame = function () {
 	promotionName = null;
 	whiteKing = null;
 	blackKing = null;
-	setUpBoardInitialPosition();
+	let [
+		getWhiteKnightsIntersection,
+		getBlackKnightsIntersection,
+		getWhiteRooksIntersection,
+		getBlackRooksIntersection,
+	] = setUpBoardInitialPosition();
+	whiteKnightsIntersection = getWhiteKnightsIntersection;
+	blackKnightsIntersection = getBlackKnightsIntersection;
+	whiteRooksIntersection = getWhiteRooksIntersection;
+	blackRooksIntersection = getBlackRooksIntersection;
 };
 export const selectPiece = function (e) {
 	let piece = pieces[Number(e.target.id)];
-	if (!piece) throw 'piece is null at selectPiece function';
+	if (!piece) throw 'piece is undefined at selectPiece function';
 	if (piece.color == turn) {
 		let [file, rank] = selectedSquare.base || [null, null];
 		removeAllHighlight();
@@ -132,12 +301,22 @@ export const selectPiece = function (e) {
 			highlightSquare('selected', perspective, ...selectedSquare.target);
 			let { base, target } = selectedSquare;
 			capturePieceFromToSquare(...base, ...target);
-			getGameStatus();
+			if (basePiece.name == 'Pawn') {
+				if (
+					(basePiece.color == 'white' && targetRank == 7) ||
+					(basePiece.color == 'black' && targetRank == 0)
+				) {
+					return;
+				}
+			}
+			switchTurn();
+			let [isInCheck, playerNoMoves] = getGameStatus();
+			generateGameNotation(basePiece, base, target, true, isInCheck, playerNoMoves);
 		} // else notify who's turn
 	}
 	e.stopPropagation();
 };
-const switchTurn = function () {
+export const switchTurn = function () {
 	turn = turn == 'white' ? 'black' : 'white';
 };
 
@@ -196,7 +375,7 @@ const capturePieceFromToSquare = function (baseFile, baseRank, desFile, desRank)
 	board[baseRank][baseFile] = null;
 	putPieceToSquare(basePiece, desFile, desRank);
 	selectedSquare.reset();
-	switchTurn();
+	// switchTurn();
 };
 const capturePassantPiece = function (base, target, passant) {
 	let [baseFile, baseRank] = base;
@@ -287,16 +466,29 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (selectedSquare.isReady) {
 			highlightSquare('selected', perspective, ...coords);
 			let { base, target } = selectedSquare;
+			let isCapture = false;
+			let isCastling = false;
 			if (selectedSquare.isPassantCapture) {
 				capturePassantPiece(base, enPassant.destinationSquare, enPassant.passantSquare);
+				isCapture = true;
 			} else if (selectedSquare.isCastling) {
 				castle(...base, ...target);
+				isCastling = true;
 			} else {
 				movePieceFromToSquare(...base, ...target);
 			}
+			if (piece.name == 'Pawn') {
+				if (
+					(piece.color == 'white' && target[1] == 7) ||
+					(piece.color == 'black' && target[1] == 0)
+				) {
+					return;
+				}
+			}
 			selectedSquare.reset();
 			switchTurn();
-			getGameStatus();
+			let [isInCheck, playerNoMoves] = getGameStatus();
+			generateGameNotation(piece, base, target, isCapture, isInCheck, playerNoMoves, isCastling);
 		}
 	});
 	rotate_board_btn.addEventListener('click', () => {

@@ -41,7 +41,7 @@ mockMove.resetMocks = function () {
 	});
 	this.mocks = [];
 };
-const isValidSquare = function (file, rank) {
+export const isValidSquare = function (file, rank) {
 	if (file > -1 && file < 8 && rank > -1 && rank < 8) return true;
 	else return false;
 };
@@ -177,10 +177,11 @@ export const getGameStatus = function () {
 			openGameOverDialog(`${color} wins by Checkmate!`);
 		} else openGameOverDialog('Draw by Stalemate');
 	} // else if king is in check, notify user
+	return [kingIsCheck, playerNoMoves];
 };
 ///////
 // short range pieces
-const getKnightSquares = function (file, rank, color) {
+export const getKnightSquares = function (file, rank, color) {
 	let path = [
 		[-1, 2],
 		[1, 2],
@@ -309,7 +310,7 @@ const getBishopSquares = function (file, rank, color) {
 	let moves = getLongRangeSquares(directional_path, file, rank, color);
 	return moves;
 };
-const getRookSquares = function (file, rank, color) {
+export const getRookSquares = function (file, rank, color) {
 	let directional_path = [
 		[-1, 0],
 		[0, 1],

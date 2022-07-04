@@ -12,6 +12,12 @@ import {
 	setWhiteKing,
 	setBlackKing,
 	newGame,
+	whiteKnightsIntersection,
+	blackKnightsIntersection,
+	whiteRooksIntersection,
+	blackRooksIntersection,
+	selectedSquare,
+	switchTurn,
 } from './main';
 
 import _white_pawn_ from '../assets/whitepawn.png';
@@ -27,6 +33,7 @@ import _black_bishop_ from '../assets/blackbishop.png';
 import _black_rook_ from '../assets/blackrook.png';
 import _black_queen_ from '../assets/blackqueen.png';
 import _black_king_ from '../assets/blackking.png';
+import { getGameStatus } from './rules';
 
 const getImagePath = function (color, name) {
 	if (color == 'white') {
@@ -200,6 +207,7 @@ export const openGameOverDialog = function (result) {
 		if (e.target.classList.contains('newGame')) {
 			board_element.removeChild(dialog);
 			newGame();
+			clearGameNotation();
 		}
 		e.stopPropagation();
 	});
@@ -247,10 +255,6 @@ const promoteTo = function (name) {
 };
 export const promotePawn = function* (pawn, file, rank, perspective) {
 	yield openPromotionBox(turn);
-	pawn.name = promotionName;
-	pawn.currentFileLocation = file;
-	pawn.currentRankLocation = rank;
-	board[rank][file] = pawn;
 	pawn.ui.addEventListener(
 		'transitionend',
 		function () {
@@ -260,6 +264,17 @@ export const promotePawn = function* (pawn, file, rank, perspective) {
 		{ once: true },
 	);
 	setUILocation(pawn.ui, perspective, file, rank);
+	selectedSquare.reset();
+	switchTurn();
+	let base = [pawn.currentFileLocation, pawn.currentRankLocation];
+	let isCapture = board[rank][file] !== null ? true : false;
+	board[rank][file] = pawn;
+	pawn.name = promotionName;
+	pawn.currentFileLocation = file;
+	pawn.currentRankLocation = rank;
+	let [isInCheck, playerNoMoves] = getGameStatus();
+	generateGameNotation(pawn, base, [file, rank], isCapture, isInCheck, playerNoMoves);
+	setPromotionName(null);
 };
 // highlight functions
 export const highlightSquare = function (type, perspective, file, rank) {
@@ -281,3 +296,96 @@ export const highlightSquares = function (squares, type, perspective) {
 		highlightSquare(type, perspective, file, rank);
 	});
 };
+
+const FILE = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+const convertArrayToNotation = array => {
+	let file = FILE[array[0]];
+	let rank = array[1] + 1;
+	return `${file}${rank}`;
+};
+
+const getPieceSymbol = name => {
+	switch (name) {
+		case 'Pawn':
+			return '';
+		case 'Knight':
+			return 'N';
+		default:
+			return name.split('')[0];
+	}
+};
+
+const generateMoveNotation = (piece, base, target, isCapture, isCheck, isGameOver, isCastling) => {
+	let targetNotation = convertArrayToNotation(target);
+	if (isCastling) {
+		if (targetNotation == 'g1' || targetNotation == 'g8') return 'O-O';
+		else return 'O-O-O';
+	}
+	let symbol = '';
+	if (piece.name == 'Pawn' || (promotionName !== null && piece.name == promotionName)) {
+		if (isCapture) symbol = FILE[base[0]];
+	} else symbol = getPieceSymbol(piece.name);
+	let intersection = null;
+	if (piece.name == 'Knight' && piece.color == 'white')
+		intersection = whiteKnightsIntersection(piece);
+	else if (piece.name == 'Knight' && piece.color == 'black')
+		intersection = blackKnightsIntersection(piece);
+	else if (piece.name == 'Rook' && piece.color == 'white')
+		intersection = whiteRooksIntersection(piece, base, target);
+	else if (piece.name == 'Rook' && piece.color == 'black')
+		intersection = blackRooksIntersection(piece, base, target);
+
+	if (intersection?.isIntersecting) {
+		let file = intersection.intersectionFile;
+		if (file != base[0]) symbol += FILE[base[0]];
+		else symbol += base[1] + 1;
+	}
+	let promotion = promotionName !== null ? `=${getPieceSymbol(promotionName)}` : '';
+	let capture = isCapture ? 'x' : '';
+	let status = '';
+	if (isGameOver) {
+		if (isCheck) status = '#';
+		else status = '*';
+	} else if (isCheck) status = '+';
+	let notation = `${symbol}${capture}${targetNotation}${promotion}${status}`;
+	return notation;
+};
+
+export const [generateGameNotation, clearGameNotation] = (() => {
+	let movetext = document.querySelector('.movetext-wrapper p');
+	if (movetext == null || movetext == undefined)
+		throw 'Unable to query ".movetext-wrapper p" element';
+	let moveCount = 1;
+	return [
+		(
+			piece,
+			base,
+			target,
+			isCapture = false,
+			isCheck = false,
+			isGameOver = false,
+			isCastling = false,
+		) => {
+			let notation = generateMoveNotation(
+				piece,
+				base,
+				target,
+				isCapture,
+				isCheck,
+				isGameOver,
+				isCastling,
+			);
+			let text = '';
+			if (piece.color == 'white') text = `${moveCount}. `;
+			else moveCount++;
+			let span = document.createElement('span');
+			span.innerHTML = `${text}${notation}&nbsp;&nbsp;`;
+			movetext.append(span);
+			//  TODO  scroll to bottom
+		},
+		() => {
+			movetext.innerHTML = '';
+			moveCount = 1;
+		},
+	];
+})();

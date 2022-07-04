@@ -1,10 +1,10 @@
 <img src="nielbrioneschessgui_logo.png" width="200" />
 
-# Simple Chess GUI
+# Chess GUI
 
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 
-A simple fully-functional chess interface with animations
+A fully-functional chess interface with animations
 
 ### Supports
 
@@ -23,7 +23,7 @@ A simple fully-functional chess interface with animations
 
 This project is deployed on Netlify
 
-[Browse Simple Chess GUI](https://nielbrioneschessgui.netlify.app)
+[Browse Chess GUI](https://nielbrioneschessgui.netlify.app)
 
 <br />
 
