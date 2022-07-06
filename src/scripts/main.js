@@ -11,6 +11,7 @@ import {
 	removeAllHighlight,
 	highlightSquares,
 	generateGameNotation,
+	downloadPGN,
 } from './utilities';
 
 export var board_element = null;
@@ -427,6 +428,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	let main = document.getElementsByTagName('main')[0];
 	let animation_speed = document.getElementById('animation_speed');
 	let rotate_board_btn = document.getElementById('rotate_board_btn');
+	let download_pgn = document.getElementById('download_pgn');
 	board_element = document.getElementById('board');
 	animation_speed.addEventListener('input', setAnimationSpeed);
 	menu_btn.addEventListener('click', () => {
@@ -493,6 +495,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 	rotate_board_btn.addEventListener('click', () => {
 		rotateBoard();
+	});
+	download_pgn.addEventListener('click', () => {
+		downloadPGN();
 	});
 	newGame();
 	getGameStatus();

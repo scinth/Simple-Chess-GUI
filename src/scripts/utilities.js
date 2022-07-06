@@ -381,11 +381,34 @@ export const [generateGameNotation, clearGameNotation] = (() => {
 			let span = document.createElement('span');
 			span.innerHTML = `${text}${notation}&nbsp;&nbsp;`;
 			movetext.append(span);
-			//  TODO  scroll to bottom
+			movetext.scrollIntoView({
+				block: 'end',
+				behavior: 'smooth',
+			});
 		},
 		() => {
 			movetext.innerHTML = '';
 			moveCount = 1;
 		},
 	];
+})();
+
+const download = (name, file) => {
+	let a = document.createElement('a');
+	a.setAttribute('href', file);
+	a.setAttribute('download', name);
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+};
+
+export const downloadPGN = (() => {
+	let movetext = null;
+	document.addEventListener('DOMContentLoaded', () => {
+		movetext = document.querySelector('.movetext-wrapper');
+	});
+	return () => {
+		let text = movetext.textContent;
+		download('chessgui.pgn', 'data:text/plain;charset=utf-8, ' + encodeURIComponent(text));
+	};
 })();
