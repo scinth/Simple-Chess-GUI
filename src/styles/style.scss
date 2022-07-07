@@ -120,18 +120,8 @@ main {
 	align-items: center;
 
 	> div {
-		margin: 2rem 0;
-	}
-
-	#rotate_board_btn {
-		--size: 3rem;
-		align-self: center;
-		width: var(--size);
-		height: var(--size);
-		background-color: #17eb88a2;
-		border-width: 0;
-		border-radius: 50%;
-		cursor: pointer;
+		display: inherit;
+		flex-direction: column;
 	}
 
 	#board {
@@ -139,6 +129,7 @@ main {
 		position: relative;
 		width: var(--board-width);
 		height: var(--board-width);
+		margin: 2rem 0 0;
 		background-image: url(../assets/chessboard.gif);
 		background-position: center;
 		background-size: contain;
@@ -179,7 +170,7 @@ main {
 			align-items: center;
 			background-color: #808080a6;
 			cursor: default;
-			z-index: 100;
+			z-index: 1;
 
 			#promotion_box {
 				display: grid;
@@ -203,7 +194,7 @@ main {
 				}
 			}
 
-			#gameover_box {
+			#dialog_card {
 				padding: 1em 2em;
 				text-align: center;
 				background-color: azure;
@@ -222,7 +213,7 @@ main {
 					font-weight: bold;
 					cursor: pointer;
 
-					&.newGame {
+					&.action {
 						background: linear-gradient(hsl(120, 60%, 48%), hsl(120, 60%, 60%));
 
 						&:hover {
@@ -234,12 +225,40 @@ main {
 		}
 	}
 
+	#board_actions {
+		flex-direction: row;
+		margin: 0;
+
+		> button {
+			--size: 3rem;
+			width: var(--size);
+			height: var(--size);
+			margin: 1rem;
+			border-width: 0;
+			border-radius: 50%;
+			cursor: pointer;
+
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+		}
+
+		#reset_board_btn {
+			background-color: #eb1717a2;
+		}
+		#rotate_board_btn {
+			background-color: #17eb88a2;
+		}
+	}
+
 	#controls {
 		text-align: center;
 		width: 100%;
 
 		.movetext {
-			height: 380px;
+			min-height: 250px;
+			max-height: 380px;
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;
@@ -258,6 +277,9 @@ main {
 
 			h3 {
 				box-shadow: 0px 1px 10px -7px rgba(0, 0, 0, 0.8);
+			}
+			p {
+				line-height: 1.7em;
 			}
 		}
 
@@ -324,16 +346,24 @@ main {
 		flex-direction: row;
 		align-items: initial;
 
-		> div {
-			margin-top: 5rem;
+		#board {
+			margin: 5rem 0 0;
 		}
 
-		#rotate_board_btn {
-			margin: 1rem;
+		#board_actions {
+			margin: 5rem 0 0;
+			height: var(--board-width);
+			flex-direction: column;
+			justify-content: center;
 		}
 
 		#controls {
+			margin: 5rem 0 0;
 			width: clamp(100px, 30vw, 500px);
+
+			.movetext {
+				height: 380px;
+			}
 		}
 	}
 }

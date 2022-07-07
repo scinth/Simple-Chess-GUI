@@ -18,6 +18,8 @@ import {
 	blackRooksIntersection,
 	selectedSquare,
 	switchTurn,
+	enableRotateBoardButton,
+	enableResetBoardButton,
 } from './main';
 
 import _white_pawn_ from '../assets/whitepawn.png';
@@ -189,22 +191,53 @@ export const setUILocation = function (ui, perspective, file, rank) {
 		ui.style.bottom = 'auto';
 	}
 };
-export const openGameOverDialog = function (result) {
+export const openResetBoardDialog = function () {
 	let dialog = document.createElement('div');
 	let html = `
 	<div class="dialog">
-		<div id="gameover_box">
-			<h1>Game Over</h1>
-			<h5>${result}</h5>
+		<div id="dialog_card">
+			<h1>Reset Board</h1>
+			<h5>Are you sure to reset the board?,<br/>All progress will be lost.</h5>
 			<div class="action_btn">
-				<button class="newGame">New Game</button>
+				<button class="action">Yes</button>
+				<button class="action">No</button>
 			</div>
 		</div>
 	</div>`;
 	dialog.innerHTML = html;
 	dialog.className = 'dialog';
 	dialog.addEventListener('click', function (e) {
-		if (e.target.classList.contains('newGame')) {
+		if (e.target.classList.contains('action')) {
+			board_element.removeChild(dialog);
+			if (e.target.textContent == 'No') {
+				enableResetBoardButton();
+				enableRotateBoardButton();
+				return;
+			}
+			enableRotateBoardButton();
+			newGame();
+			clearGameNotation();
+		}
+		e.stopPropagation();
+	});
+	board_element.append(dialog);
+};
+export const openGameOverDialog = function (result) {
+	let dialog = document.createElement('div');
+	let html = `
+	<div class="dialog">
+		<div id="dialog_card">
+			<h1>Game Over</h1>
+			<h5>${result}</h5>
+			<div class="action_btn">
+				<button class="action">New Game</button>
+			</div>
+		</div>
+	</div>`;
+	dialog.innerHTML = html;
+	dialog.className = 'dialog';
+	dialog.addEventListener('click', function (e) {
+		if (e.target.classList.contains('action')) {
 			board_element.removeChild(dialog);
 			newGame();
 			clearGameNotation();
@@ -351,7 +384,16 @@ const generateMoveNotation = (piece, base, target, isCapture, isCheck, isGameOve
 	return notation;
 };
 
-export const [generateGameNotation, clearGameNotation] = (() => {
+const download = (name, file) => {
+	let a = document.createElement('a');
+	a.setAttribute('href', file);
+	a.setAttribute('download', name);
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+};
+
+export const [generateGameNotation, clearGameNotation, downloadPGN] = (() => {
 	let movetext = document.querySelector('.movetext-wrapper p');
 	if (movetext == null || movetext == undefined)
 		throw 'Unable to query ".movetext-wrapper p" element';
@@ -379,36 +421,29 @@ export const [generateGameNotation, clearGameNotation] = (() => {
 			if (piece.color == 'white') text = `${moveCount}. `;
 			else moveCount++;
 			let span = document.createElement('span');
-			span.innerHTML = `${text}${notation}&nbsp;&nbsp;`;
+			span.innerHTML = `${text}${notation} `;
 			movetext.append(span);
 			movetext.scrollIntoView({
 				block: 'end',
 				behavior: 'smooth',
 			});
+			if (moveCount == 1 && piece.color == 'white') enableResetBoardButton();
 		},
 		() => {
 			movetext.innerHTML = '';
 			moveCount = 1;
 		},
+		() => {
+			let text = movetext.textContent;
+			if (text == '') {
+				alert('Nothing to download, movetext is empty');
+				return;
+			}
+			let date = new Date().toISOString();
+			download(
+				`chessgui-${date}.pgn`,
+				'data:text/plain;charset=utf-8,' + encodeURIComponent(text.trimEnd()),
+			);
+		},
 	];
-})();
-
-const download = (name, file) => {
-	let a = document.createElement('a');
-	a.setAttribute('href', file);
-	a.setAttribute('download', name);
-	document.body.appendChild(a);
-	a.click();
-	document.body.removeChild(a);
-};
-
-export const downloadPGN = (() => {
-	let movetext = null;
-	document.addEventListener('DOMContentLoaded', () => {
-		movetext = document.querySelector('.movetext-wrapper');
-	});
-	return () => {
-		let text = movetext.textContent;
-		download('chessgui.pgn', 'data:text/plain;charset=utf-8, ' + encodeURIComponent(text));
-	};
 })();

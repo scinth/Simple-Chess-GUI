@@ -6,6 +6,7 @@ export class Piece {
 		this.id = id;
 		this.name = name;
 		this.color = color;
+		this.isCaptured = false;
 		this.initialFileLocation = file;
 		this.initialRankLocation = rank;
 		this.currentFileLocation = file;

@@ -12,6 +12,7 @@ import {
 	highlightSquares,
 	generateGameNotation,
 	downloadPGN,
+	openResetBoardDialog,
 } from './utilities';
 
 export var board_element = null;
@@ -28,6 +29,11 @@ export var blackRooksIntersection = null;
 
 var board_size = 400;
 var perspective = 'white';
+
+export let enableResetBoardButton = null;
+export let disableResetBoardButton = null;
+export let enableRotateBoardButton = null;
+export let disableRotateBoardButton = null;
 
 export const selectedSquare = new SelectedSquare();
 const initialPosition = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
@@ -84,7 +90,7 @@ const setUpBoardInitialPosition = function () {
 		const b_knight = board[0][1];
 		const g_knight = board[0][6];
 		return movedKnight => {
-			if (!(b_knight && g_knight)) return { isIntersecting: false };
+			if (b_knight.isCaptured || g_knight.isCaptured) return { isIntersecting: false };
 			let b_squares = getKnightSquares(
 				b_knight.currentFileLocation,
 				b_knight.currentRankLocation,
@@ -128,7 +134,7 @@ const setUpBoardInitialPosition = function () {
 		const b_knight = board[7][1];
 		const g_knight = board[7][6];
 		return movedKnight => {
-			if (!(b_knight && g_knight)) return { isIntersecting: false };
+			if (b_knight.isCaptured || g_knight.isCaptured) return { isIntersecting: false };
 			let b_squares = getKnightSquares(
 				b_knight.currentFileLocation,
 				b_knight.currentRankLocation,
@@ -172,9 +178,9 @@ const setUpBoardInitialPosition = function () {
 		const a_rook = board[0][0];
 		const h_rook = board[0][7];
 		return (movedPiece, base, target) => {
+			if (a_rook.isCaptured || h_rook.isCaptured) return { isIntersecting: false };
 			let [baseFile, baseRank] = base;
 			let [targetFile, targetRank] = target;
-			if (!(a_rook && h_rook)) return { isIntersecting: false };
 			let otherPiece = movedPiece === a_rook ? h_rook : a_rook;
 			let squares = getRookSquares(
 				otherPiece.currentFileLocation,
@@ -202,9 +208,9 @@ const setUpBoardInitialPosition = function () {
 		const a_rook = board[7][0];
 		const h_rook = board[7][7];
 		return (movedPiece, base, target) => {
+			if (a_rook.isCaptured || h_rook.isCaptured) return { isIntersecting: false };
 			let [baseFile, baseRank] = base;
 			let [targetFile, targetRank] = target;
-			if (!(a_rook && h_rook)) return { isIntersecting: false };
 			let otherPiece = movedPiece === a_rook ? h_rook : a_rook;
 			let squares = getRookSquares(
 				otherPiece.currentFileLocation,
@@ -253,7 +259,6 @@ const setAnimationSpeed = function () {
 	document.documentElement.style.setProperty('--animation-speed', `${this.value}s`);
 };
 export const newGame = function () {
-	perspective = 'white';
 	turn = 'white';
 	enPassant = null;
 	promotion = null;
@@ -270,6 +275,7 @@ export const newGame = function () {
 	blackKnightsIntersection = getBlackKnightsIntersection;
 	whiteRooksIntersection = getWhiteRooksIntersection;
 	blackRooksIntersection = getBlackRooksIntersection;
+	disableResetBoardButton();
 };
 export const selectPiece = function (e) {
 	let piece = pieces[Number(e.target.id)];
@@ -347,6 +353,10 @@ const putPieceToSquare = function (piece, file, rank) {
 	}
 	piece.currentFileLocation = file;
 	piece.currentRankLocation = rank;
+	let capturedPiece = board[rank][file];
+	if (capturedPiece !== null) {
+		capturedPiece.isCaptured = true;
+	}
 	board[rank][file] = piece;
 	setUILocation(piece.ui, perspective, file, rank);
 };
@@ -376,7 +386,6 @@ const capturePieceFromToSquare = function (baseFile, baseRank, desFile, desRank)
 	board[baseRank][baseFile] = null;
 	putPieceToSquare(basePiece, desFile, desRank);
 	selectedSquare.reset();
-	// switchTurn();
 };
 const capturePassantPiece = function (base, target, passant) {
 	let [baseFile, baseRank] = base;
@@ -418,17 +427,19 @@ const resizeBoard = function () {
 	if (minSize > 500) minSize = 500;
 	setBoardSize(minSize * 0.9);
 };
+
 window.onresize = resizeBoard;
 document.addEventListener('DOMContentLoaded', function () {
 	resizeBoard();
-	let menu = document.getElementById('menu');
-	let menu_btn = document.getElementById('menu_btn');
-	let settings = document.getElementById('settings');
-	let settings_btn = document.getElementById('settings_btn');
-	let main = document.getElementsByTagName('main')[0];
-	let animation_speed = document.getElementById('animation_speed');
-	let rotate_board_btn = document.getElementById('rotate_board_btn');
-	let download_pgn = document.getElementById('download_pgn');
+	const menu = document.getElementById('menu');
+	const menu_btn = document.getElementById('menu_btn');
+	const settings = document.getElementById('settings');
+	const settings_btn = document.getElementById('settings_btn');
+	const main = document.getElementsByTagName('main')[0];
+	const animation_speed = document.getElementById('animation_speed');
+	const download_pgn = document.getElementById('download_pgn');
+	const reset_board_btn = document.getElementById('reset_board_btn');
+	const rotate_board_btn = document.getElementById('rotate_board_btn');
 	board_element = document.getElementById('board');
 	animation_speed.addEventListener('input', setAnimationSpeed);
 	menu_btn.addEventListener('click', () => {
@@ -492,6 +503,25 @@ document.addEventListener('DOMContentLoaded', function () {
 			let [isInCheck, playerNoMoves] = getGameStatus();
 			generateGameNotation(piece, base, target, isCapture, isInCheck, playerNoMoves, isCastling);
 		}
+	});
+
+	enableResetBoardButton = function () {
+		reset_board_btn.disabled = false;
+	};
+	disableResetBoardButton = function () {
+		reset_board_btn.disabled = true;
+	};
+	enableRotateBoardButton = function () {
+		rotate_board_btn.disabled = false;
+	};
+	disableRotateBoardButton = function () {
+		rotate_board_btn.disabled = true;
+	};
+
+	reset_board_btn.addEventListener('click', () => {
+		disableResetBoardButton();
+		disableRotateBoardButton();
+		openResetBoardDialog();
 	});
 	rotate_board_btn.addEventListener('click', () => {
 		rotateBoard();
