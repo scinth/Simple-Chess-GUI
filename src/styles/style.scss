@@ -13,15 +13,17 @@ html {
 }
 body {
 	color: black;
-	background: linear-gradient(to bottom right, #585858, #706d6d);
 	width: 100%;
 	max-width: 100%;
 	min-height: 100vh;
+	background-image: url(../assets/background.jpg);
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 nav {
 	width: 100%;
 	max-width: 100%;
-	background-color: #4d4d4d;
+	background-color: #4d4d4dee;
 	position: -webkit-sticky;
 	position: sticky;
 	top: 0;
@@ -37,17 +39,24 @@ nav {
 		color: white;
 		background: none;
 		border: none;
+		flex-shrink: 0;
+	}
+
+	button i {
+		margin-right: 0.5em;
 	}
 
 	#menu {
 		width: -webkit-fill-available;
 		ul {
+			font-size: 0.8em;
 			list-style-type: none;
+			width: clamp(230px, 30vw, 300px);
 			display: inline-block;
 			position: absolute;
+			background-color: #4d4d4dee;
 			top: 100%;
 			left: 0;
-			background-color: #4d4d4d;
 			transform: translateX(-100%);
 
 			li a {
@@ -73,7 +82,7 @@ nav {
 			list-style-type: none;
 			width: clamp(230px, 30vw, 300px);
 			color: white;
-			background-color: #4d4d4d;
+			background-color: #4d4d4dee;
 			padding: 1em 1.5em;
 			position: absolute;
 			top: 100%;
@@ -236,16 +245,26 @@ main {
 			margin: 1rem;
 			border-width: 0;
 			border-radius: 50%;
+			font-size: 1.5em;
+			color: white;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 			cursor: pointer;
 
 			&:disabled {
 				opacity: 0.5;
 				cursor: not-allowed;
 			}
+
+			&:not(:disabled):hover {
+				transition: transform 0.3s ease;
+				transform: scale(1.1);
+			}
 		}
 
 		#reset_board_btn {
-			background-color: #eb1717a2;
+			background-color: hsla(0, 84%, 51%, 0.635);
 		}
 		#rotate_board_btn {
 			background-color: #17eb88a2;
@@ -265,8 +284,8 @@ main {
 			align-content: stretch;
 			color: #555;
 			background-color: white;
-			border-style: inset;
-			border-radius: 7px;
+			border-top-left-radius: 1.5em;
+			border-top-right-radius: 1.5em;
 
 			h3,
 			p {
@@ -289,34 +308,30 @@ main {
 		}
 
 		.actions {
-			form {
-				margin: 1rem;
-
-				label {
-					color: #555;
-					font-size: 1.3rem;
-				}
-
-				input[type='range'] {
-					cursor: pointer;
-				}
-			}
-
 			.buttons {
 				display: flex;
 				justify-content: space-evenly;
 				align-content: center;
+				background-color: #2ab172;
 
 				button {
 					width: clamp(110px, 40%, 150px);
 					margin: 1rem 0;
-					padding: 0.8em 1.8em;
+					padding: 1.3em;
 					border: none;
 					border-radius: 2rem;
 					color: white;
-					background-color: hsl(0, 0%, 60%);
+					background-color: #3ebe7b;
 					font-weight: bold;
 					cursor: pointer;
+
+					i {
+						margin-right: 0.5em;
+					}
+
+					&:hover {
+						background-color: #45df8f;
+					}
 				}
 			}
 		}
@@ -325,12 +340,15 @@ main {
 
 @media (orientation: landscape) {
 	nav {
+		align-items: baseline;
 		#menu_btn {
 			display: none;
 		}
 		#menu {
 			ul {
+				width: initial;
 				position: static;
+				background-color: transparent;
 				transition: none;
 				transform: translateX(0);
 
@@ -362,7 +380,9 @@ main {
 			width: clamp(100px, 30vw, 500px);
 
 			.movetext {
-				height: 380px;
+				height: calc(var(--board-width) - 81.656px);
+				border-top-left-radius: 0;
+				border-top-right-radius: 0;
 			}
 		}
 	}

@@ -23,10 +23,11 @@
 		<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png" />
 		<title>Chess GUI</title>
+		<script src="https://kit.fontawesome.com/52378a1b3e.js" crossorigin="anonymous"></script>
 	</head>
 	<body>
 		<nav role="navigation">
-			<button id="menu_btn">Menu</button>
+			<button id="menu_btn"><i class="fa-solid fa-bars"></i>Menu</button>
 			<div id="menu">
 				<ul>
 					<li><a href="#">Load pgn file</a></li>
@@ -54,13 +55,17 @@
 					</li>
 				</ul>
 			</div>
-			<button id="settings_btn">Settings</button>
+			<button id="settings_btn"><i class="fa-solid fa-gear"></i>Settings</button>
 		</nav>
 		<main>
 			<div id="board"></div>
 			<div id="board_actions">
-				<button id="reset_board_btn" type="button" title="reset_board_btn"></button>
-				<button id="rotate_board_btn" type="button" title="rotate_board_btn"></button>
+				<button id="reset_board_btn" type="button" title="Reset Board">
+					<i class="fa-solid fa-rotate-left"></i>
+				</button>
+				<button id="rotate_board_btn" type="button" title="Rotate Board">
+					<i class="fa-solid fa-rotate fa-flip-horizontal"></i>
+				</button>
 			</div>
 			<div id="controls">
 				<div class="movetext">
@@ -71,8 +76,12 @@
 				</div>
 				<div class="actions">
 					<div class="buttons">
-						<button id="download_pgn" type="button">Download PGN</button>
-						<button id="download_fen" type="button">Download FEN</button>
+						<button id="download_pgn" type="button" title="Download PGN">
+							<i class="fa-solid fa-download"></i>PGN
+						</button>
+						<button id="download_fen" type="button" title="Download FEN">
+							<i class="fa-solid fa-download"></i>FEN
+						</button>
 					</div>
 				</div>
 			</div>
