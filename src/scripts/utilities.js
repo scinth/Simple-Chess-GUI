@@ -197,7 +197,9 @@ export const openResetBoardDialog = function () {
 	<div class="dialog">
 		<div id="dialog_card">
 			<h1>Reset Board</h1>
-			<h5>Are you sure to reset the board?,<br/>All progress will be lost.</h5>
+			<br />
+			<h5>Are you sure to reset the board?,<br/>All your progress will be lost.</h5>
+			<br/ >
 			<div class="action_btn">
 				<button class="action">Yes</button>
 				<button class="action">No</button>
@@ -228,9 +230,11 @@ export const openGameOverDialog = function (result) {
 	<div class="dialog">
 		<div id="dialog_card">
 			<h1>Game Over</h1>
+			<br />
 			<h5>${result}</h5>
+			<br />
 			<div class="action_btn">
-				<button class="action">New Game</button>
+				<button class="action">Reset Board</button>
 			</div>
 		</div>
 	</div>`;
@@ -239,6 +243,7 @@ export const openGameOverDialog = function (result) {
 	dialog.addEventListener('click', function (e) {
 		if (e.target.classList.contains('action')) {
 			board_element.removeChild(dialog);
+			enableRotateBoardButton();
 			newGame();
 			clearGameNotation();
 		}
@@ -423,8 +428,8 @@ export const [generateGameNotation, clearGameNotation, downloadPGN] = (() => {
 			let span = document.createElement('span');
 			span.innerHTML = `${text}${notation} `;
 			movetext.append(span);
-			movetext.scrollIntoView({
-				block: 'end',
+			movetext.parentElement.scrollTo({
+				top: movetext.clientHeight,
 				behavior: 'smooth',
 			});
 			if (moveCount == 1 && piece.color == 'white') enableResetBoardButton();

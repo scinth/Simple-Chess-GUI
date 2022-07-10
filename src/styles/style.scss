@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2&family=Courier+Prime&family=Patua+One&family=Unica+One&display=swap');
 :root {
 	--board-width: 0;
 	--animation-speed: 0.3s;
@@ -16,7 +17,7 @@ body {
 	width: 100%;
 	max-width: 100%;
 	min-height: 100vh;
-	background-image: url(../assets/background.jpg);
+	background-image: url(../assets/mobile_background.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
 }
@@ -33,6 +34,7 @@ nav {
 	align-content: center;
 
 	button {
+		font-family: 'Patua One', cursive;
 		font-size: 1.2em;
 		font-weight: bold;
 		padding: 1em 1.5em;
@@ -60,9 +62,10 @@ nav {
 			transform: translateX(-100%);
 
 			li a {
-				width: 100%;
+				font-family: 'Patua One', cursive;
 				font-size: 1.2em;
 				font-weight: bold;
+				width: 100%;
 				text-decoration: none;
 				display: inline-block;
 				padding: 1em 1.5em;
@@ -90,6 +93,7 @@ nav {
 			visibility: hidden;
 
 			label {
+				font-family: 'Patua One', cursive;
 				display: block;
 				width: 100%;
 
@@ -135,6 +139,7 @@ main {
 
 	#board {
 		--square-size: calc(var(--board-width) / 8);
+		--shadow: calc(var(--board-width) * 0.03);
 		position: relative;
 		width: var(--board-width);
 		height: var(--board-width);
@@ -143,9 +148,9 @@ main {
 		background-position: center;
 		background-size: contain;
 		background-repeat: no-repeat;
+		box-shadow: 0 0 var(--shadow) calc(var(--shadow) * 0.5) rgba(0, 0, 0, 0.69);
 		cursor: pointer;
 		flex-shrink: 0;
-		box-shadow: 0 0 15px 10px rgba(0, 0, 0, 0.2);
 
 		.highlight {
 			position: absolute;
@@ -204,6 +209,8 @@ main {
 			}
 
 			#dialog_card {
+				font-family: 'Baloo 2', cursive;
+				width: 80%;
 				padding: 1em 2em;
 				text-align: center;
 				background-color: azure;
@@ -213,21 +220,26 @@ main {
 					color: #333;
 				}
 
+				.action_btn {
+					display: flex;
+					justify-content: space-between;
+					align-content: center;
+				}
+
 				button {
-					margin: 1.7em 2em 1em;
-					padding: 1em 3em;
-					border: none;
-					border-radius: 0.8em;
-					color: white;
+					font-family: 'Unica One', cursive;
 					font-weight: bold;
+					flex-grow: 1;
+					margin: 1rem 0.5rem;
+					padding: 1.3em;
+					border: none;
+					border-radius: 2rem;
+					color: white;
+					background-color: #3ebe7b;
 					cursor: pointer;
 
-					&.action {
-						background: linear-gradient(hsl(120, 60%, 48%), hsl(120, 60%, 60%));
-
-						&:hover {
-							background: linear-gradient(hsl(120, 70%, 48%), hsl(120, 70%, 60%));
-						}
+					&:hover {
+						background-color: #45df8f;
 					}
 				}
 			}
@@ -240,12 +252,12 @@ main {
 
 		> button {
 			--size: 3rem;
+			font-size: 1.5em;
 			width: var(--size);
 			height: var(--size);
 			margin: 1rem;
 			border-width: 0;
 			border-radius: 50%;
-			font-size: 1.5em;
 			color: white;
 			display: flex;
 			justify-content: center;
@@ -283,7 +295,7 @@ main {
 			justify-content: flex-start;
 			align-content: stretch;
 			color: #555;
-			background-color: white;
+			background-color: azure;
 			border-top-left-radius: 1.5em;
 			border-top-right-radius: 1.5em;
 
@@ -295,9 +307,11 @@ main {
 			}
 
 			h3 {
+				font-family: 'Baloo 2', cursive;
 				box-shadow: 0px 1px 10px -7px rgba(0, 0, 0, 0.8);
 			}
 			p {
+				font-family: 'Courier Prime', monospace;
 				line-height: 1.7em;
 			}
 		}
@@ -315,6 +329,8 @@ main {
 				background-color: #2ab172;
 
 				button {
+					font-family: 'Unica One', cursive;
+					font-weight: bold;
 					width: clamp(110px, 40%, 150px);
 					margin: 1rem 0;
 					padding: 1.3em;
@@ -322,7 +338,6 @@ main {
 					border-radius: 2rem;
 					color: white;
 					background-color: #3ebe7b;
-					font-weight: bold;
 					cursor: pointer;
 
 					i {
@@ -339,6 +354,9 @@ main {
 }
 
 @media (orientation: landscape) {
+	body {
+		background-image: url(../assets/desktop_background.jpg);
+	}
 	nav {
 		align-items: baseline;
 		#menu_btn {

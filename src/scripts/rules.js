@@ -1,4 +1,13 @@
-import { turn, enPassant, pieces, board, whiteKing, blackKing } from './main';
+import {
+	turn,
+	enPassant,
+	pieces,
+	board,
+	whiteKing,
+	blackKing,
+	disableResetBoardButton,
+	disableRotateBoardButton,
+} from './main';
 import { openGameOverDialog } from './utilities';
 
 const mockMove = {
@@ -176,6 +185,8 @@ export const getGameStatus = function () {
 			let color = turn == 'white' ? 'Black' : 'White';
 			openGameOverDialog(`${color} wins by Checkmate!`);
 		} else openGameOverDialog('Draw by Stalemate');
+		disableResetBoardButton();
+		disableRotateBoardButton();
 	} // else if king is in check, notify user
 	return [kingIsCheck, playerNoMoves];
 };
