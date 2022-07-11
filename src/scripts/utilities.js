@@ -20,6 +20,10 @@ import {
 	switchTurn,
 	enableRotateBoardButton,
 	enableResetBoardButton,
+	enPassant,
+	halfmoveClock,
+	incrementFullMoveNumber,
+	fullmoveNumber,
 } from './main';
 
 import _white_pawn_ from '../assets/whitepawn.png';
@@ -303,6 +307,8 @@ export const promotePawn = function* (pawn, file, rank, perspective) {
 	);
 	setUILocation(pawn.ui, perspective, file, rank);
 	selectedSquare.reset();
+	halfmoveClock.reset();
+	if (turn === 'black') incrementFullMoveNumber();
 	switchTurn();
 	let base = [pawn.currentFileLocation, pawn.currentRankLocation];
 	let isCapture = board[rank][file] !== null ? true : false;
@@ -452,3 +458,66 @@ export const [generateGameNotation, clearGameNotation, downloadPGN] = (() => {
 		},
 	];
 })();
+
+export const downloadFEN = () => {
+	let fen = createFEN();
+	let date = new Date().toISOString();
+	download(`chessgui-${date}.fen`, 'data:text/plain;charset=utf-8,' + encodeURIComponent(fen));
+};
+
+const getPiecePlacementNotation = board => {
+	let notation = '';
+	let file = 0,
+		rank = 0;
+	let boardSize = board.length;
+	for (rank = boardSize - 1; rank >= 0; rank--) {
+		let space_counter = 0;
+		for (file = 0; file < boardSize; file++) {
+			let piece = board[rank][file];
+			if (piece !== null) {
+				if (space_counter > 0) {
+					notation += space_counter;
+					space_counter = 0;
+				}
+				let symbol = getPieceSymbol(piece.name);
+				if (symbol === '') symbol = 'P';
+				if (piece.color === 'black') symbol = symbol.toLowerCase();
+				notation += symbol;
+			} else space_counter++;
+		}
+		if (space_counter > 0) {
+			notation += space_counter;
+		}
+		if (rank > 0) notation += '/';
+	}
+	return notation;
+};
+
+export const createFEN = () => {
+	let fen = '';
+	// 1. Piece placement
+	fen += getPiecePlacementNotation(board) + ' ';
+	// 2. Active color
+	fen += turn == 'white' ? 'w ' : 'b ';
+	// 3. Castling availability
+	let castling = '';
+	if (whiteKing.castling?.isKingNotMovedYet) {
+		castling += whiteKing.castling?.isHRookNotMovedYet ? 'K' : '';
+		castling += whiteKing.castling?.isARookNotMovedYet ? 'Q' : '';
+	}
+	if (blackKing.castling?.isKingNotMovedYet) {
+		castling += blackKing.castling?.isHRookNotMovedYet ? 'k' : '';
+		castling += blackKing.castling?.isARookNotMovedYet ? 'q' : '';
+	}
+	if (castling === '') castling = '-';
+	fen += castling + ' ';
+	// 4. En passant square
+	if (enPassant?.passantSquare) {
+		fen += convertArrayToNotation(enPassant.passantSquare) + ' ';
+	} else fen += '- ';
+	// 5. Halfmove clock
+	fen += halfmoveClock.value + ' ';
+	// 6. Fullmove number
+	fen += fullmoveNumber;
+	return fen;
+};

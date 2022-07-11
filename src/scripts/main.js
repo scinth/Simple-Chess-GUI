@@ -13,8 +13,13 @@ import {
 	generateGameNotation,
 	downloadPGN,
 	openResetBoardDialog,
+	downloadFEN,
 } from './utilities';
 
+var board_size = 400;
+var perspective = 'white';
+
+export var fullmoveNumber = 1;
 export var board_element = null;
 export var turn = 'white';
 export var promotion = null;
@@ -26,10 +31,6 @@ export var whiteKnightsIntersection = null;
 export var blackKnightsIntersection = null;
 export var whiteRooksIntersection = null;
 export var blackRooksIntersection = null;
-
-var board_size = 400;
-var perspective = 'white';
-
 export let enableResetBoardButton = null;
 export let disableResetBoardButton = null;
 export let enableRotateBoardButton = null;
@@ -57,6 +58,24 @@ export const setBlackKing = function (value) {
 };
 export const setPromotionName = function (value) {
 	promotionName = value;
+};
+export const halfmoveClock = {
+	value: 0,
+	counter: 1,
+	tick() {
+		this.counter++;
+		if (this.counter == 2) {
+			this.value++;
+			this.counter = 0;
+		}
+	},
+	reset() {
+		this.value = 0;
+		this.counter = 1;
+	},
+};
+export const incrementFullMoveNumber = () => {
+	fullmoveNumber++;
 };
 
 // gameflow
@@ -265,6 +284,8 @@ export const newGame = function () {
 	promotionName = null;
 	whiteKing = null;
 	blackKing = null;
+	halfmoveClock.reset();
+	fullmoveNumber = 1;
 	let [
 		getWhiteKnightsIntersection,
 		getBlackKnightsIntersection,
@@ -307,6 +328,8 @@ export const selectPiece = function (e) {
 			removeAllHighlight();
 			highlightSquare('selected', perspective, ...selectedSquare.target);
 			let { base, target } = selectedSquare;
+			halfmoveClock.reset();
+			if (turn === 'black') fullmoveNumber++;
 			capturePieceFromToSquare(...base, ...target);
 			if (basePiece.name == 'Pawn') {
 				if (
@@ -401,6 +424,8 @@ const capturePassantPiece = function (base, target, passant) {
 		{ once: true },
 	);
 	movePieceFromToSquare(baseFile, baseRank, passantFile, passantRank);
+	halfmoveClock.reset();
+	if (turn === 'black') fullmoveNumber++;
 };
 const castle = function (baseFile, baseRank, targetFile, targetRank) {
 	let baseRookCoords, targetRookCoords;
@@ -413,6 +438,8 @@ const castle = function (baseFile, baseRank, targetFile, targetRank) {
 	}
 	movePieceFromToSquare(baseFile, baseRank, targetFile, targetRank);
 	movePieceFromToSquare(...baseRookCoords, ...targetRookCoords);
+	halfmoveClock.tick();
+	if (turn === 'black') fullmoveNumber++;
 };
 
 //////////////////////
@@ -438,6 +465,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const main = document.getElementsByTagName('main')[0];
 	const animation_speed = document.getElementById('animation_speed');
 	const download_pgn = document.getElementById('download_pgn');
+	const download_fen = document.getElementById('download_fen');
 	const reset_board_btn = document.getElementById('reset_board_btn');
 	const rotate_board_btn = document.getElementById('rotate_board_btn');
 	board_element = document.getElementById('board');
@@ -488,6 +516,10 @@ document.addEventListener('DOMContentLoaded', function () {
 				castle(...base, ...target);
 				isCastling = true;
 			} else {
+				if (piece.name == 'Pawn') {
+					halfmoveClock.reset();
+				} else halfmoveClock.tick();
+				if (turn === 'black') fullmoveNumber++;
 				movePieceFromToSquare(...base, ...target);
 			}
 			if (piece.name == 'Pawn') {
@@ -528,6 +560,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 	download_pgn.addEventListener('click', () => {
 		downloadPGN();
+	});
+	download_fen.addEventListener('click', () => {
+		downloadFEN();
 	});
 	newGame();
 	getGameStatus();
