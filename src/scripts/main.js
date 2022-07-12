@@ -14,6 +14,7 @@ import {
 	downloadPGN,
 	openResetBoardDialog,
 	downloadFEN,
+	readFENfile,
 } from './utilities';
 
 var board_size = 400;
@@ -462,6 +463,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	const menu_btn = document.getElementById('menu_btn');
 	const settings = document.getElementById('settings');
 	const settings_btn = document.getElementById('settings_btn');
+	// const load_pgn = document.getElementById('load-pgn');
+	const load_fen = document.getElementById('load-fen');
 	const main = document.getElementsByTagName('main')[0];
 	const animation_speed = document.getElementById('animation_speed');
 	const download_pgn = document.getElementById('download_pgn');
@@ -535,6 +538,20 @@ document.addEventListener('DOMContentLoaded', function () {
 			let [isInCheck, playerNoMoves] = getGameStatus();
 			generateGameNotation(piece, base, target, isCapture, isInCheck, playerNoMoves, isCastling);
 		}
+	});
+
+	load_fen.addEventListener('click', () => {
+		let input = document.createElement('input');
+		input.setAttribute('type', 'file');
+		input.setAttribute('accept', '.fen');
+		input.addEventListener(
+			'change',
+			e => {
+				readFENfile(e.target.files[0]);
+			},
+			{ once: true },
+		);
+		input.click();
 	});
 
 	enableResetBoardButton = function () {

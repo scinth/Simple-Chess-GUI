@@ -521,3 +521,48 @@ export const createFEN = () => {
 	fen += fullmoveNumber;
 	return fen;
 };
+
+// const
+
+const fileReaderErrorHandler = e => {
+	console.log('Cannot read file: ', e.target.result);
+	e.target.removeEventListener('error', fileReaderErrorHandler, false);
+	e.target.removeEventListener('load', fileReaderLoadHandler, false);
+};
+
+const fileReaderLoadHandler = e => {
+	// handle result based on type
+	if (e.target.fileType === '.fen') {
+		console.log('FEN Success!: ', e.target.result);
+	} else if (e.target.fileType === '.pgn') {
+		console.log('PGN Success!: ', e.target.result);
+	}
+	e.target.removeEventListener('error', fileReaderErrorHandler, false);
+	e.target.removeEventListener('load', fileReaderLoadHandler, false);
+};
+
+const readFile = (file, type) => {
+	let reader = new FileReader();
+	reader.fileType = type;
+	reader.addEventListener('error', fileReaderErrorHandler, false);
+	reader.addEventListener('load', fileReaderLoadHandler, false);
+	reader.readAsText(file);
+};
+
+export const readFENfile = file => {
+	let fileType = file.name.slice(-4);
+	if (fileType !== '.fen') {
+		alert(`Unable to load the file '${fileType}', please select a '.fen' file`);
+		return;
+	}
+	readFile(file, fileType);
+};
+
+export const readPGNfile = file => {
+	let fileType = file.name.slice(-4);
+	if (fileType !== '.pgn') {
+		alert(`Unable to load the file '${fileType}', please select a '.pgn' file`);
+		return;
+	}
+	readFile(file, fileType);
+};
