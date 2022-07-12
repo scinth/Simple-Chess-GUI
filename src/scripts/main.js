@@ -60,6 +60,9 @@ export const setBlackKing = function (value) {
 export const setPromotionName = function (value) {
 	promotionName = value;
 };
+export const setEnPassant = value => {
+	enPassant = value;
+};
 export const halfmoveClock = {
 	value: 0,
 	counter: 1,
@@ -80,17 +83,21 @@ export const incrementFullMoveNumber = () => {
 };
 
 // gameflow
-const setUpBoardInitialPosition = function () {
+const setBoardInitialPosition = function (piecePlacement = initialPosition) {
 	board.forEach(rank => rank.fill(null));
 	pieces.fill(null);
 	board_element.innerHTML = '';
-	let position = initialPosition.split('/');
+	let rankPlacement = piecePlacement.split('/');
 	let rank,
 		file,
-		rlen = position.length;
+		rlen = rankPlacement.length;
 	let trank = 7;
+	let whiteKnights = [];
+	let blackKnights = [];
+	let whiteRooks = [];
+	let blackRooks = [];
 	for (rank = 0; rank < rlen; rank++, trank--) {
-		let set = position[rank].split('');
+		let set = rankPlacement[rank].split('');
 		let flen = set.length;
 		let tfile = 0;
 		for (file = 0; file < flen; file++) {
@@ -102,13 +109,20 @@ const setUpBoardInitialPosition = function () {
 				newPiece.ui = createPieceUI(newPiece, perspective);
 				board_element.append(newPiece.ui);
 				tfile++;
+				if (token === 'N') whiteKnights.push(newPiece);
+				else if (token === 'n') blackKnights.push(newPiece);
+				else if (token === 'R') whiteRooks.push(newPiece);
+				else if (token === 'r') blackRooks.push(newPiece);
 			} else tfile += Number(token);
 		}
 	}
 
 	let getWhiteKnightsIntersection = (() => {
-		const b_knight = board[0][1];
-		const g_knight = board[0][6];
+		if (whiteKnights.length < 2)
+			return () => {
+				return { isIntersecting: false };
+			};
+		const [b_knight, g_knight] = whiteKnights;
 		return movedKnight => {
 			if (b_knight.isCaptured || g_knight.isCaptured) return { isIntersecting: false };
 			let b_squares = getKnightSquares(
@@ -151,8 +165,11 @@ const setUpBoardInitialPosition = function () {
 		};
 	})();
 	let getBlackKnightsIntersection = (() => {
-		const b_knight = board[7][1];
-		const g_knight = board[7][6];
+		if (blackKnights.length < 2)
+			return () => {
+				return { isIntersecting: false };
+			};
+		const [b_knight, g_knight] = blackKnights;
 		return movedKnight => {
 			if (b_knight.isCaptured || g_knight.isCaptured) return { isIntersecting: false };
 			let b_squares = getKnightSquares(
@@ -195,8 +212,11 @@ const setUpBoardInitialPosition = function () {
 		};
 	})();
 	let getWhiteRooksIntersection = (() => {
-		const a_rook = board[0][0];
-		const h_rook = board[0][7];
+		if (whiteRooks.length < 2)
+			return () => {
+				return { isIntersecting: false };
+			};
+		const [a_rook, h_rook] = whiteRooks;
 		return (movedPiece, base, target) => {
 			if (a_rook.isCaptured || h_rook.isCaptured) return { isIntersecting: false };
 			let [baseFile, baseRank] = base;
@@ -225,8 +245,11 @@ const setUpBoardInitialPosition = function () {
 		};
 	})();
 	let getBlackRooksIntersection = (() => {
-		const a_rook = board[7][0];
-		const h_rook = board[7][7];
+		if (blackRooks.length < 2)
+			return () => {
+				return { isIntersecting: false };
+			};
+		const [a_rook, h_rook] = blackRooks;
 		return (movedPiece, base, target) => {
 			if (a_rook.isCaptured || h_rook.isCaptured) return { isIntersecting: false };
 			let [baseFile, baseRank] = base;
@@ -278,7 +301,7 @@ const rotateBoard = function () {
 const setAnimationSpeed = function () {
 	document.documentElement.style.setProperty('--animation-speed', `${this.value}s`);
 };
-export const newGame = function () {
+export const newGame = function (piecePlacement = initialPosition) {
 	turn = 'white';
 	enPassant = null;
 	promotion = null;
@@ -292,7 +315,7 @@ export const newGame = function () {
 		getBlackKnightsIntersection,
 		getWhiteRooksIntersection,
 		getBlackRooksIntersection,
-	] = setUpBoardInitialPosition();
+	] = setBoardInitialPosition(piecePlacement);
 	whiteKnightsIntersection = getWhiteKnightsIntersection;
 	blackKnightsIntersection = getBlackKnightsIntersection;
 	whiteRooksIntersection = getWhiteRooksIntersection;
@@ -346,6 +369,9 @@ export const selectPiece = function (e) {
 		} // else notify who's turn
 	}
 	e.stopPropagation();
+};
+export const setTurn = value => {
+	turn = value;
 };
 export const switchTurn = function () {
 	turn = turn == 'white' ? 'black' : 'white';

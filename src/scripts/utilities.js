@@ -25,6 +25,8 @@ import {
 	halfmoveClock,
 	incrementFullMoveNumber,
 	fullmoveNumber,
+	setTurn,
+	setEnPassant,
 } from './main';
 
 import _white_pawn_ from '../assets/whitepawn.png';
@@ -343,6 +345,11 @@ export const highlightSquares = function (squares, type, perspective) {
 };
 
 const FILE = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+const convertNotationToArray = notation => {
+	let [file, rank] = notation.split('');
+	return [FILE.indexOf(file), Number(rank) - 1];
+};
 const convertArrayToNotation = array => {
 	let file = FILE[array[0]];
 	let rank = array[1] + 1;
@@ -527,19 +534,19 @@ const createFEN = () => {
 const createPGN = movetext => {
 	let pgn = '';
 	// [Event "Name of event"]
-	pgn += `[Event "Simple Chess GUI"]\n`;
+	pgn += `[Event "SimpleChessGUI Tourn"]\n`;
 	// [Site "City, Region COUNTRY"]
-	pgn += `[Site "unknown"]\n`;
+	pgn += `[Site "SimpleChessGUI"]\n`;
 	// [Date "YYYY.MM.DD" or "??"]
 	let date = new Date();
 	if (date === null || date === undefined) pgn += '??';
 	else pgn += `[Date "${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}"]\n`;
 	// [Round "1"]
-	pgn += `[Round "1"]\n`;
+	pgn += `[Round "?"]\n`;
 	// [White "Lastname, Firstname M."]
-	pgn += `[White "unknown"]\n`;
+	pgn += `[White "Player1"]\n`;
 	// [Black "Lastname, Firstname M."]
-	pgn += `[Black "unknown"]\n`;
+	pgn += `[Black "Player2"]\n`;
 	// [Result "1-0" or "*"]
 	let king = turn == 'white' ? whiteKing : blackKing;
 	let kingIsCheck = isKingInCheck(king.currentFileLocation, king.currentRankLocation, turn);
@@ -557,6 +564,57 @@ const createPGN = movetext => {
 	return pgn;
 };
 
+const setBoardByFEN = fen => {
+	let [piecePlacement, activeColor, castlingAvailability, enPassantSquare] = fen.split(' ');
+	// set board position
+	newGame(piecePlacement);
+	// set turn
+	setTurn(activeColor === 'w' ? 'white' : 'black');
+	// set castling
+	if (castlingAvailability === '-') {
+		delete whiteKing.castling;
+		delete blackKing.castling;
+	} else {
+		let castling = {
+			isKingNotMovedYet: false,
+			isARookNotMovedYet: false,
+			isHRookNotMovedYet: false,
+		};
+		whiteKing.castling = { ...castling };
+		blackKing.castling = { ...castling };
+		let castling_array = castlingAvailability.split('');
+		castling_array.forEach(token => {
+			switch (token) {
+				case 'K':
+					whiteKing.castling.isKingNotMovedYet = true;
+					whiteKing.castling.isHRookNotMovedYet = true;
+				case 'Q':
+					whiteKing.castling.isKingNotMovedYet = true;
+					whiteKing.castling.isARookNotMovedYet = true;
+				case 'k':
+					blackKing.castling.isKingNotMovedYet = true;
+					blackKing.castling.isHRookNotMovedYet = true;
+				case 'q':
+					blackKing.castling.isKingNotMovedYet = true;
+					blackKing.castling.isARookNotMovedYet = true;
+			}
+		});
+	}
+	// set en-passant
+	if (enPassantSquare !== '-') {
+		let passant = convertNotationToArray(enPassantSquare);
+		let destinationRank = null;
+		if (passant[1] === 2) destinationRank = 3;
+		else if (passant[1] === 5) destinationRank = 4;
+		setEnPassant({
+			destinationSquare: [passant[0], destinationRank],
+			passantSquare: passant,
+		});
+	}
+	enableResetBoardButton();
+	clearGameNotation();
+};
+
 const fileReaderErrorHandler = e => {
 	console.log('Cannot read file: ', e.target.result);
 	e.target.removeEventListener('error', fileReaderErrorHandler, false);
@@ -566,9 +624,11 @@ const fileReaderErrorHandler = e => {
 const fileReaderLoadHandler = e => {
 	// handle result based on type
 	if (e.target.fileType === '.fen') {
-		console.log('FEN Success!: ', e.target.result);
+		// console.log('FEN Success!: ', e.target.result);
+		setBoardByFEN(e.target.result);
 	} else if (e.target.fileType === '.pgn') {
 		console.log('PGN Success!: ', e.target.result);
+		// setBoardByPGN(e.target.result);
 	}
 	e.target.removeEventListener('error', fileReaderErrorHandler, false);
 	e.target.removeEventListener('load', fileReaderLoadHandler, false);
