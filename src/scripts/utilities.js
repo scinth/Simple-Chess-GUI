@@ -1,4 +1,5 @@
 import { Piece, Castling } from './classes';
+import { isKingInCheck, hasMovesLeft } from './rules';
 import {
 	selectPiece,
 	board_element,
@@ -447,13 +448,14 @@ export const [generateGameNotation, clearGameNotation, downloadPGN] = (() => {
 		() => {
 			let text = movetext.textContent;
 			if (text == '') {
-				alert('Nothing to download, movetext is empty');
+				alert('No game to process, make moves first');
 				return;
 			}
 			let date = new Date().toISOString();
+			let pgn = createPGN(text.trimEnd());
 			download(
 				`chessgui-${date}.pgn`,
-				'data:text/plain;charset=utf-8,' + encodeURIComponent(text.trimEnd()),
+				'data:application/vnd.chess-pgn;charset=utf-8,' + encodeURIComponent(pgn),
 			);
 		},
 	];
@@ -493,7 +495,7 @@ const getPiecePlacementNotation = board => {
 	return notation;
 };
 
-export const createFEN = () => {
+const createFEN = () => {
 	let fen = '';
 	// 1. Piece placement
 	fen += getPiecePlacementNotation(board) + ' ';
@@ -522,7 +524,38 @@ export const createFEN = () => {
 	return fen;
 };
 
-// const
+const createPGN = movetext => {
+	let pgn = '';
+	// [Event "Name of event"]
+	pgn += `[Event "Simple Chess GUI"]\n`;
+	// [Site "City, Region COUNTRY"]
+	pgn += `[Site "unknown"]\n`;
+	// [Date "YYYY.MM.DD" or "??"]
+	let date = new Date();
+	if (date === null || date === undefined) pgn += '??';
+	else pgn += `[Date "${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}"]\n`;
+	// [Round "1"]
+	pgn += `[Round "1"]\n`;
+	// [White "Lastname, Firstname M."]
+	pgn += `[White "unknown"]\n`;
+	// [Black "Lastname, Firstname M."]
+	pgn += `[Black "unknown"]\n`;
+	// [Result "1-0" or "*"]
+	let king = turn == 'white' ? whiteKing : blackKing;
+	let kingIsCheck = isKingInCheck(king.currentFileLocation, king.currentRankLocation, turn);
+	let playerNoMoves = !hasMovesLeft(turn);
+	let result = '*';
+	if (playerNoMoves) {
+		if (kingIsCheck) {
+			result = turn === 'white' ? '0-1' : '1-0';
+		} else result = '1/2-1/2';
+	}
+	pgn += `[Result "${result}"]\n\n`;
+	// movetext
+	if (result !== '*') movetext += ` ${result}`;
+	pgn += movetext;
+	return pgn;
+};
 
 const fileReaderErrorHandler = e => {
 	console.log('Cannot read file: ', e.target.result);

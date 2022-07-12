@@ -167,7 +167,7 @@ export const getValidMoves = function (piece) {
 	});
 	return validMoves;
 };
-const hasMovesLeft = function (color) {
+export const hasMovesLeft = function (color) {
 	let piecesInTurn = [];
 	board.forEach(row => {
 		row.forEach(piece => {
