@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	const menu_btn = document.getElementById('menu_btn');
 	const settings = document.getElementById('settings');
 	const settings_btn = document.getElementById('settings_btn');
-	// const load_pgn = document.getElementById('load-pgn');
+	const load_pgn = document.getElementById('load-pgn');
 	const load_fen = document.getElementById('load-fen');
 	const main = document.getElementsByTagName('main')[0];
 	const animation_speed = document.getElementById('animation_speed');
@@ -566,18 +566,22 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	load_fen.addEventListener('click', () => {
+	const openFileSelection = (fileType, readFile) => {
 		let input = document.createElement('input');
 		input.setAttribute('type', 'file');
-		input.setAttribute('accept', '.fen');
+		input.setAttribute('accept', fileType);
 		input.addEventListener(
 			'change',
 			e => {
-				readFENfile(e.target.files[0]);
+				readFile(e.target.files[0]);
 			},
 			{ once: true },
 		);
 		input.click();
+	};
+
+	load_fen.addEventListener('click', () => {
+		openFileSelection('.fen', readFENfile);
 	});
 
 	enableResetBoardButton = function () {

@@ -627,7 +627,8 @@ const fileReaderLoadHandler = e => {
 		// console.log('FEN Success!: ', e.target.result);
 		setBoardByFEN(e.target.result);
 	} else if (e.target.fileType === '.pgn') {
-		console.log('PGN Success!: ', e.target.result);
+		// console.log('PGN Success!: ', e.target.result);
+		readPGN(e.target.result);
 		// setBoardByPGN(e.target.result);
 	}
 	e.target.removeEventListener('error', fileReaderErrorHandler, false);
@@ -646,15 +647,6 @@ export const readFENfile = file => {
 	let fileType = file.name.slice(-4);
 	if (fileType !== '.fen') {
 		alert(`Unable to load the file '${fileType}', please select a '.fen' file`);
-		return;
-	}
-	readFile(file, fileType);
-};
-
-export const readPGNfile = file => {
-	let fileType = file.name.slice(-4);
-	if (fileType !== '.pgn') {
-		alert(`Unable to load the file '${fileType}', please select a '.pgn' file`);
 		return;
 	}
 	readFile(file, fileType);

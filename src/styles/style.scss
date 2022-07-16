@@ -3,6 +3,24 @@
 	--board-width: 0;
 	--animation-speed: 0.3s;
 }
+$fonts-map: (
+	Baloo: (
+		'Baloo 2',
+		cursive,
+	),
+	Courier: (
+		'Courier Prime',
+		monospace,
+	),
+	Patua: (
+		'Patua One',
+		cursive,
+	),
+	Unica: (
+		'Unica One',
+		cursive,
+	),
+);
 * {
 	margin: 0;
 	padding: 0;
@@ -20,6 +38,9 @@ body {
 	background-image: url(../assets/mobile_background.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
 }
 nav {
 	width: 100%;
@@ -34,7 +55,7 @@ nav {
 	align-content: center;
 
 	button {
-		font-family: 'Patua One', cursive;
+		font-family: map-get($map: $fonts-map, $key: Patua);
 		font-size: 1.2em;
 		font-weight: bold;
 		padding: 1em 1.5em;
@@ -62,7 +83,7 @@ nav {
 			transform: translateX(-100%);
 
 			li a {
-				font-family: 'Patua One', cursive;
+				font-family: map-get($map: $fonts-map, $key: Patua);
 				font-size: 1.2em;
 				font-weight: bold;
 				width: 100%;
@@ -70,6 +91,11 @@ nav {
 				display: inline-block;
 				padding: 1em 1.5em;
 				color: white;
+			}
+
+			li button {
+				width: 100%;
+				text-align: left;
 			}
 		}
 		&.active {
@@ -93,7 +119,7 @@ nav {
 			visibility: hidden;
 
 			label {
-				font-family: 'Patua One', cursive;
+				font-family: map-get($map: $fonts-map, $key: Patua);
 				display: block;
 				width: 100%;
 
@@ -209,7 +235,7 @@ main {
 			}
 
 			#dialog_card {
-				font-family: 'Baloo 2', cursive;
+				font-family: map-get($map: $fonts-map, $key: Baloo);
 				width: 80%;
 				padding: 1em 2em;
 				text-align: center;
@@ -227,7 +253,7 @@ main {
 				}
 
 				button {
-					font-family: 'Unica One', cursive;
+					font-family: map-get($map: $fonts-map, $key: Unica);
 					font-weight: bold;
 					flex-grow: 1;
 					margin: 1rem 0.5rem;
@@ -284,8 +310,13 @@ main {
 	}
 
 	#controls {
+		--shadow: calc(var(--board-width) * 0.03);
 		text-align: center;
-		width: 100%;
+		width: 95%;
+		max-width: 600px;
+		border-radius: 1.5em 1.5em 1.2em 1.2em;
+		box-shadow: 0 0 var(--shadow) calc(var(--shadow) * 0.5) rgba(0, 0, 0, 0.69);
+		overflow: hidden;
 
 		.movetext {
 			min-height: 250px;
@@ -296,8 +327,6 @@ main {
 			align-content: stretch;
 			color: #555;
 			background-color: azure;
-			border-top-left-radius: 1.5em;
-			border-top-right-radius: 1.5em;
 
 			h3,
 			p {
@@ -307,11 +336,11 @@ main {
 			}
 
 			h3 {
-				font-family: 'Baloo 2', cursive;
+				font-family: map-get($map: $fonts-map, $key: Baloo);
 				box-shadow: 0px 1px 10px -7px rgba(0, 0, 0, 0.8);
 			}
 			p {
-				font-family: 'Courier Prime', monospace;
+				font-family: map-get($map: $fonts-map, $key: Courier);
 				line-height: 1.7em;
 			}
 		}
@@ -322,6 +351,8 @@ main {
 		}
 
 		.actions {
+			overflow: hidden;
+
 			.buttons {
 				display: flex;
 				justify-content: space-evenly;
@@ -329,7 +360,7 @@ main {
 				background-color: #2ab172;
 
 				button {
-					font-family: 'Unica One', cursive;
+					font-family: map-get($map: $fonts-map, $key: Unica);
 					font-weight: bold;
 					width: clamp(110px, 40%, 150px);
 					margin: 1rem 0;
@@ -349,6 +380,22 @@ main {
 					}
 				}
 			}
+		}
+	}
+}
+
+footer {
+	text-align: center;
+	color: white;
+	background: linear-gradient(to bottom, transparent, black);
+	padding: 2rem;
+	margin-top: auto;
+
+	p {
+		font-family: map-get($map: $fonts-map, $key: Baloo);
+
+		.developer {
+			font-size: 2em;
 		}
 	}
 }
@@ -396,11 +443,10 @@ main {
 		#controls {
 			margin: 5rem 0 0;
 			width: clamp(100px, 30vw, 500px);
+			border-radius: 0;
 
 			.movetext {
 				height: calc(var(--board-width) - 81.656px);
-				border-top-left-radius: 0;
-				border-top-right-radius: 0;
 			}
 		}
 	}
