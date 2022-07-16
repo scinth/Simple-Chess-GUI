@@ -6,16 +6,13 @@
 
 A fully-functional chess interface with animations
 
-### Supports
-
-- King castling
-- En-passant move
-- En-passant capture
-- Pawn promotion
-
 ### Features
 
+- Load/Import FEN file
+- Download FEN file
+- Download PGN file
 - Animation speed setting
+- Reset Board
 - Rotate Board
 - Auto highlight valid moves
 

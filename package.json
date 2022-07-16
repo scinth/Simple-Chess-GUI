@@ -9,7 +9,7 @@
 	},
 	"keywords": [],
 	"author": "Briones R.",
-	"license": "ISC",
+	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.17.0"
 	},
