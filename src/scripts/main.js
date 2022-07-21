@@ -17,21 +17,21 @@ import {
 	readFENfile,
 } from './utilities';
 
-var board_size = 400;
-var perspective = 'white';
+let board_size = 400;
+let perspective = 'white';
 
-export var fullmoveNumber = 1;
-export var board_element = null;
-export var turn = 'white';
-export var promotion = null;
-export var promotionName = null;
-export var enPassant = null;
-export var whiteKing = null;
-export var blackKing = null;
-export var whiteKnightsIntersection = null;
-export var blackKnightsIntersection = null;
-export var whiteRooksIntersection = null;
-export var blackRooksIntersection = null;
+export let fullmoveNumber = 1;
+export let board_element = null;
+export let turn = 'white';
+export let promotion = null;
+export let promotionName = null;
+export let enPassant = null;
+export let whiteKing = null;
+export let blackKing = null;
+export let whiteKnightsIntersection = null;
+export let blackKnightsIntersection = null;
+export let whiteRooksIntersection = null;
+export let blackRooksIntersection = null;
 export let enableResetBoardButton = null;
 export let disableResetBoardButton = null;
 export let enableRotateBoardButton = null;
