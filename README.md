@@ -2,9 +2,9 @@
 
 # Chess GUI
 
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs) [![Netlify Status](https://api.netlify.com/api/v1/badges/e2b7c6f0-6a2a-49e9-ae3b-f84bf0c72a2b/deploy-status)](https://app.netlify.com/sites/nielbrioneschessgui/deploys)
 
-A fully-functional chess interface with animations
+A fully-functional interface for loading and generating chess game files.
 
 ### Features
 
